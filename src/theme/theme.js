@@ -30,6 +30,27 @@ export const spicyTheme = createTheme({
     shape: {
         borderRadius: 8, // কার্ড এবং বাটনের বর্ডার কিছুটা রাউন্ডেড করতে
     },
+    components: {
+        MuiCssBaseline: {
+            styleOverrides: {
+                "*::-webkit-scrollbar": {
+                    width: "8px",
+                    height: "8px",
+                    borderRadius: "none"
+                },
+                "*::-webkit-scrollbar-track": {
+                    backgroundColor: "#FAFAF9", // background.default
+                },
+                "*::-webkit-scrollbar-thumb": {
+                    backgroundColor: "#EA580C", // primary.main
+                    borderRadius: "4px",
+                },
+                "*::-webkit-scrollbar-thumb:hover": {
+                    backgroundColor: "#C2410C", // darker shade
+                },
+            },
+        },
+    },
 });
 
 // ২. Modern & Elegant (Clean & Professional)
@@ -50,6 +71,26 @@ export const modernTheme = createTheme({
             primary: '#0F172A', // Deep Navy
         },
     },
+    components: {
+        MuiCssBaseline: {
+            styleOverrides: {
+                "*::-webkit-scrollbar": {
+                    width: "8px",
+                    height: "8px",
+                },
+                "*::-webkit-scrollbar-track": {
+                    backgroundColor: "#F8FAFC", // background.default
+                },
+                "*::-webkit-scrollbar-thumb": {
+                    backgroundColor: "#047857", // primary.main
+                    borderRadius: "4px",
+                },
+                "*::-webkit-scrollbar-thumb:hover": {
+                    backgroundColor: "#065F46", // darker shade
+                },
+            },
+        },
+    },
 });
 
 // ৩. Premium Dark Mode
@@ -68,6 +109,26 @@ export const darkTheme = createTheme({
         },
         text: {
             primary: '#F3F4F6', // Light Gray
+        },
+    },
+    components: {
+        MuiCssBaseline: {
+            styleOverrides: {
+                "*::-webkit-scrollbar": {
+                    width: "8px",
+                    height: "8px",
+                },
+                "*::-webkit-scrollbar-track": {
+                    backgroundColor: "#0F172A", // background.default
+                },
+                "*::-webkit-scrollbar-thumb": {
+                    backgroundColor: "#F59E0B", // primary.main
+                    borderRadius: "4px",
+                },
+                "*::-webkit-scrollbar-thumb:hover": {
+                    backgroundColor: "#D97706", // darker shade
+                },
+            },
         },
     },
 });

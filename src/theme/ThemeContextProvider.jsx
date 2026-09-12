@@ -1,15 +1,14 @@
-import React, { createContext, useState, useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { ThemeProvider, CssBaseline } from "@mui/material";
+import { useSelector } from "react-redux";
 import { spicyTheme, modernTheme, darkTheme } from "./theme";
 
 import SpicyFavicon from "../assets/Icons/Spicy-orange.png";
 import ModernFavicon from "../assets/Icons/green-modern.png";
 import DarkFavicon from "../assets/Icons/dark-gray.png";
 
-export const ThemeContext = createContext();
-
 export const AppThemeProvider = ({ children }) => {
-  const [themeName, setThemeName] = useState("spicy");
+  const themeName = useSelector((state) => state.theme.themeName);
 
   const themeMap = {
     spicy: { theme: spicyTheme, favicon: SpicyFavicon },
@@ -30,20 +29,10 @@ export const AppThemeProvider = ({ children }) => {
     link.href = currentThemeData.favicon;
   }, [currentThemeData.favicon]);
 
-  const value = useMemo(
-    () => ({
-      themeName,
-      setThemeName,
-    }),
-    [themeName],
-  );
-
   return (
-    <ThemeContext.Provider value={value}>
-      <ThemeProvider theme={currentThemeData.theme}>
-        <CssBaseline />
-        {children}
-      </ThemeProvider>
-    </ThemeContext.Provider>
+    <ThemeProvider theme={currentThemeData.theme}>
+      <CssBaseline />
+      {children}
+    </ThemeProvider>
   );
 };

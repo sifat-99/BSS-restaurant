@@ -24,7 +24,6 @@ import BSS_LOGO_Green from "../assets/Logos/BSS_Restaurant_Modern_Elegant.png";
 import { useDispatch, useSelector } from "react-redux";
 import { login, startLoading, stopLoading } from "../store/authSlice";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
-import { SignInAPI } from "../api/POST";
 import ThemeSwitcher from "../utils/ThemeSwitcher";
 import ImageCarousel from "./Carousel";
 import { alpha } from "@mui/material/styles";
@@ -179,7 +178,7 @@ export const RightBanner = () => {
   );
 };
 
-const LoginPage = () => {
+const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const themeName = useSelector((state) => state.theme.themeName);
@@ -198,32 +197,18 @@ const LoginPage = () => {
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-  const handleFormSubmit = async (event) => {
+  const handleFormSubmit = (event) => {
     event.preventDefault();
+    console.log("Form Submitted");
     const data = new FormData(event.currentTarget);
     const username = data.get("username");
     const password = data.get("password");
-    
     dispatch(startLoading());
-    try {
-      const response = await SignInAPI({ username, password });
-      
-      if (response && response.data) {
-        const { token, refreshToken, user } = response.data;
-        
-        localStorage.setItem("token", token);
-        localStorage.setItem("refreshToken", refreshToken);
-        localStorage.setItem("user", JSON.stringify(user));
-        
-        dispatch(login(response.data));
-        navigate("/dashboard");
-      }
-    } catch (error) {
-      console.error("Login failed:", error);
-      alert("Login failed. Please check your credentials.");
-    } finally {
+    dispatch(login({ username, password }));
+    setTimeout(() => {
       dispatch(stopLoading());
-    }
+      navigate("/dashboard");
+    }, 2000);
   };
 
   return (
@@ -236,6 +221,71 @@ const LoginPage = () => {
       <Box sx={{ position: "absolute", top: 16, right: 16, zIndex: 10 }}>
         <ThemeSwitcher />
       </Box>
+
+      <Grid
+        size={{ xs: 12, md: 7 }}
+        sx={{
+          display: { xs: "none", md: "block" },
+          position: "relative",
+          zIndex: 2,
+          overflow: "hidden",
+          backgroundColor: (t) =>
+            t.palette.mode === "light"
+              ? t.palette.grey[50]
+              : t.palette.grey[900],
+        }}
+      >
+        <Slide direction="left" in={true} timeout={{ enter: 1000 }}>
+          <Box sx={{ width: "100%", height: "100%" }}>
+            <ImageCarousel
+              items={[
+                <RightBanner key="0" />,
+
+                <DynamicCard
+                  title={" Welcome Back to BSS Restaurant Dashboard! "}
+                  subTitle={
+                    " Effortlessly manage your restaurant's heartbeat — from employees to every table's orders. Let's make service seamless and delicious together! "
+                  }
+                  illustration={<DynamicDashboardIllustration />}
+                  key={0}
+                />,
+                <DynamicCard
+                  title={"Your Restaurant, Prefectly Managed!!"}
+                  subTitle={
+                    "Enter your credentials to access a world of insights that empower your team and delight your guests."
+                  }
+                  illustration={<DynamicManagementIllustration />}
+                  key={4}
+                />,
+                <DynamicCard
+                  illustration={<ValidationIllustration />}
+                  title={"Task Management Validated"}
+                  subTitle={
+                    "Stay on top of your daily operations with seamless task tracking and real-time validation across all your branches."
+                  }
+                  key="1"
+                />,
+                <DynamicCard
+                  illustration={<SecurityIllustration />}
+                  title={"Granular Access Control"}
+                  subTitle={
+                    "Empower your staff safely. Manage roles, visibility, and permissions with our robust security dashboard."
+                  }
+                  key="2"
+                />,
+                <DynamicCard
+                  illustration={<AnalyticsIllustration />}
+                  title={"Data-Driven Insights"}
+                  subTitle={
+                    "Visualize your restaurant's performance. Track sales, monitor trends, and make informed decisions instantly."
+                  }
+                  key="3"
+                />,
+              ]}
+            />
+          </Box>
+        </Slide>
+      </Grid>
 
       <Grid
         size={{ xs: 12, md: 5 }}
@@ -257,7 +307,7 @@ const LoginPage = () => {
             textAlign: "center",
           }}
         >
-          <Slide direction="left" in={true} timeout={{ enter: 1000 }}>
+          <Slide direction="right" in={true} timeout={{ enter: 1000 }}>
             <Box>
               <Box
                 sx={{
@@ -393,7 +443,7 @@ const LoginPage = () => {
                   {isLoading ? (
                     <CircularProgress color="theme.primary" size={24} />
                   ) : (
-                    "LOGIN"
+                    "SIGN UP"
                   )}
                 </Button>
 
@@ -414,15 +464,15 @@ const LoginPage = () => {
                     Forgot Password?
                   </Link>
                   <Typography variant="body2" color="text.secondary">
-                    New User?{" "}
+                    Already have an account?{" "}
                     <Link
                       component={RouterLink}
-                      to="/sign-up"
+                      to="/"
                       color="primary"
                       underline="hover"
                       fontWeight="bold"
                     >
-                      SIGN UP
+                      LOGIN
                     </Link>
                   </Typography>
                 </Box>
@@ -431,72 +481,8 @@ const LoginPage = () => {
           </Slide>
         </Box>
       </Grid>
-      <Grid
-        size={{ xs: 12, md: 7 }}
-        sx={{
-          display: { xs: "none", md: "block" },
-          position: "relative",
-          zIndex: 2,
-          overflow: "hidden",
-          backgroundColor: (t) =>
-            t.palette.mode === "light"
-              ? t.palette.grey[50]
-              : t.palette.grey[900],
-        }}
-      >
-        <Slide direction="right" in={true} timeout={{ enter: 1000 }}>
-          <Box sx={{ width: "100%", height: "100%" }}>
-            <ImageCarousel
-              items={[
-                <RightBanner key="0" />,
-
-                <DynamicCard
-                  title={" Welcome Back to BSS Restaurant Dashboard! "}
-                  subTitle={
-                    " Effortlessly manage your restaurant's heartbeat — from employees to every table's orders. Let's make service seamless and delicious together! "
-                  }
-                  illustration={<DynamicDashboardIllustration />}
-                  key={0}
-                />,
-                <DynamicCard
-                  title={"Your Restaurant, Prefectly Managed!!"}
-                  subTitle={
-                    "Enter your credentials to access a world of insights that empower your team and delight your guests."
-                  }
-                  illustration={<DynamicManagementIllustration />}
-                  key={4}
-                />,
-                <DynamicCard
-                  illustration={<ValidationIllustration />}
-                  title={"Task Management Validated"}
-                  subTitle={
-                    "Stay on top of your daily operations with seamless task tracking and real-time validation across all your branches."
-                  }
-                  key="1"
-                />,
-                <DynamicCard
-                  illustration={<SecurityIllustration />}
-                  title={"Granular Access Control"}
-                  subTitle={
-                    "Empower your staff safely. Manage roles, visibility, and permissions with our robust security dashboard."
-                  }
-                  key="2"
-                />,
-                <DynamicCard
-                  illustration={<AnalyticsIllustration />}
-                  title={"Data-Driven Insights"}
-                  subTitle={
-                    "Visualize your restaurant's performance. Track sales, monitor trends, and make informed decisions instantly."
-                  }
-                  key="3"
-                />,
-              ]}
-            />
-          </Box>
-        </Slide>
-      </Grid>
     </Grid>
   );
 };
 
-export default LoginPage;
+export default SignupPage;
