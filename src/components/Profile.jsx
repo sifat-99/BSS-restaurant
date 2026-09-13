@@ -180,7 +180,7 @@ const Profile = () => {
             Contact Information
           </Typography>
 
-          <Grid container spacing={4}>
+          <Grid container spacing={{ xs: 2, md: 4 }}>
             <Grid size={{ xs: 12, md: 6 }}>
               <ProfileInfoItem
                 icon={<EmailIcon />}

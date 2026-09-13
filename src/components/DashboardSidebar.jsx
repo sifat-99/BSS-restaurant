@@ -30,9 +30,9 @@ import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../store/authSlice";
 
-const BSS_ICON_Orange = "../src/assets/Icons/Spicy-orange.png";
-const BSS_ICON_Dark = "../src/assets/Icons/dark-gray.png";
-const BSS_ICON_Green = "../src/assets/Icons/green-modern.png";
+import BSS_ICON_Orange from "../assets/Icons/Spicy-orange.png";
+import BSS_ICON_Dark from "../assets/Icons/dark-gray.png";
+import BSS_ICON_Green from "../assets/Icons/green-modern.png";
 
 const drawerWidth = 240;
 const miniDrawerWidth = 65;
@@ -83,6 +83,8 @@ function DashboardMainPage(props) {
       setMobileOpen(!mobileOpen);
     }
   };
+
+  const showFullSidebar = isHovered || mobileOpen;
 
   const drawer = (
     <Box
@@ -137,10 +139,10 @@ function DashboardMainPage(props) {
               )}
             </Avatar>
           </ListItemAvatar>
-          {isHovered && (
+          {showFullSidebar && (
             <Typography
               variant="h6"
-              sx={{ opacity: isHovered ? 1 : 0, whiteSpace: "nowrap" }}
+              sx={{ opacity: showFullSidebar ? 1 : 0, whiteSpace: "nowrap" }}
             >
               BSS Restaurant
             </Typography>
@@ -155,7 +157,7 @@ function DashboardMainPage(props) {
             to="/dashboard/profile"
             sx={{
               minHeight: 48,
-              justifyContent: isHovered ? "initial" : "center",
+              justifyContent: showFullSidebar ? "initial" : "center",
               px: 2.5,
             }}
             style={({ isActive }) => ({
@@ -169,7 +171,7 @@ function DashboardMainPage(props) {
             <ListItemIcon
               sx={{
                 minWidth: 0,
-                mr: isHovered ? 3 : "auto",
+                mr: showFullSidebar ? 3 : "auto",
                 justifyContent: "center",
                 color: "inherit",
               }}
@@ -178,7 +180,7 @@ function DashboardMainPage(props) {
             </ListItemIcon>
             <ListItemText
               primary="Profile"
-              sx={{ opacity: isHovered ? 1 : 0 }}
+              sx={{ opacity: showFullSidebar ? 1 : 0 }}
             />
           </ListItemButton>
         </ListItem>
@@ -187,20 +189,20 @@ function DashboardMainPage(props) {
             <ListItemButton
               sx={{
                 minHeight: 48,
-                justifyContent: isHovered ? "initial" : "center",
+                justifyContent: showFullSidebar ? "initial" : "center",
                 px: 2.5,
               }}
             >
               <ListItemIcon
                 sx={{
                   minWidth: 0,
-                  mr: isHovered ? 3 : "auto",
+                  mr: showFullSidebar ? 3 : "auto",
                   justifyContent: "center",
                 }}
               >
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
-              <ListItemText primary={text} sx={{ opacity: isHovered ? 1 : 0 }} />
+              <ListItemText primary={text} sx={{ opacity: showFullSidebar ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
         ))} */}
@@ -212,14 +214,14 @@ function DashboardMainPage(props) {
             <ListItemButton
               sx={{
                 minHeight: 48,
-                justifyContent: isHovered ? "initial" : "center",
+                justifyContent: showFullSidebar ? "initial" : "center",
                 px: 2.5,
               }}
             >
               <ListItemIcon
                 sx={{
                   minWidth: 0,
-                  mr: isHovered ? 3 : "auto",
+                  mr: showFullSidebar ? 3 : "auto",
                   justifyContent: "center",
                 }}
               >
@@ -227,7 +229,7 @@ function DashboardMainPage(props) {
               </ListItemIcon>
               <ListItemText
                 primary={text}
-                sx={{ opacity: isHovered ? 1 : 0 }}
+                sx={{ opacity: showFullSidebar ? 1 : 0 }}
               />
             </ListItemButton>
           </ListItem>
@@ -289,6 +291,8 @@ function DashboardMainPage(props) {
               noWrap
               component="div"
               sx={{ flexGrow: 1 }}
+              onClick={() => navigate("/dashboard")}
+              cursor="pointer"
             >
               BSS Restaurant
             </Typography>
@@ -424,8 +428,10 @@ function DashboardMainPage(props) {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
+          p: { xs: 1.5, sm: 2, md: 3 },
+          minWidth: 0,
           width: {
+            xs: "100%",
             sm: `calc(100% - ${isHovered ? drawerWidth : miniDrawerWidth}px)`,
           },
           transition: (theme) =>

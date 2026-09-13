@@ -83,18 +83,20 @@ const StatCard = ({ title, value, icon, color }) => {
       >
         {icon}
       </Box>
-      <CardContent sx={{ p: 3 }}>
-        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+      <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+        <Box
+          sx={{ display: "flex", alignItems: "center", mb: { xs: 1.5, md: 2 } }}
+        >
           <Box
             sx={{
-              p: 1.5,
+              p: { xs: 1, md: 1.5 },
               borderRadius: 3,
               backgroundColor: alpha(color, 0.15),
               color: color,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              mr: 2,
+              mr: { xs: 1.5, md: 2 },
             }}
           >
             {icon}
@@ -103,12 +105,16 @@ const StatCard = ({ title, value, icon, color }) => {
             variant="h6"
             color="text.secondary"
             fontWeight="600"
-            sx={{ fontSize: "1rem" }}
+            sx={{ fontSize: { xs: "0.9rem", md: "1rem" } }}
           >
             {title}
           </Typography>
         </Box>
-        <Typography variant="h4" fontWeight="bold" color="text.primary">
+        <Typography
+          sx={{ typography: { xs: "h5", md: "h4" } }}
+          fontWeight="bold"
+          color="text.primary"
+        >
           {value !== undefined && value !== null ? value : "..."}
         </Typography>
       </CardContent>
@@ -153,7 +159,7 @@ const FoodAvatar = ({ src, alt, name, sx }) => {
                     setLoaded(true);
                     setError(true);
                   },
-                }
+                },
               },
             }
           : {})}
@@ -234,6 +240,8 @@ const CustomPieChart = ({ data, title }) => {
         display: "flex",
         flexDirection: "column",
         bgcolor: "background.paper",
+        width: "100%",
+        overflow: "hidden",
       }}
     >
       <Typography
@@ -242,7 +250,9 @@ const CustomPieChart = ({ data, title }) => {
       >
         {title}
       </Typography>
-      <Box sx={{ flexGrow: 1, minHeight: 0, pb: 2 }}>
+      <Box
+        sx={{ flexGrow: 1, minHeight: 0, minWidth: 0, width: "100%", pb: 2 }}
+      >
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -377,19 +387,34 @@ const Dashboard = () => {
         <Box>
           <Typography
             variant="h4"
+            sx={{ typography: { xs: "h5", sm: "h4" } }}
             fontWeight="bold"
             color="primary.main"
             gutterBottom
           >
             Dashboard Overview
           </Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography
+            sx={{ typography: { xs: "body2", sm: "body1" } }}
+            color="text.secondary"
+          >
             Here's what's happening in your restaurant today.
           </Typography>
         </Box>
 
-        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          <FormControl size="small" sx={{ minWidth: 120 }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: { xs: 1, sm: 2 },
+            alignItems: "center",
+            flexWrap: "wrap",
+            width: { xs: "100%", sm: "auto" },
+          }}
+        >
+          <FormControl
+            size="small"
+            sx={{ minWidth: 120, flex: { xs: 1, sm: "none" } }}
+          >
             <InputLabel>Month</InputLabel>
             <Select
               value={month}
@@ -404,7 +429,10 @@ const Dashboard = () => {
               ))}
             </Select>
           </FormControl>
-          <FormControl size="small" sx={{ minWidth: 100 }}>
+          <FormControl
+            size="small"
+            sx={{ minWidth: 100, flex: { xs: 1, sm: "none" } }}
+          >
             <InputLabel>Year</InputLabel>
             <Select
               value={year}
@@ -442,7 +470,11 @@ const Dashboard = () => {
       ) : (
         <>
           {/* Stat Cards */}
-          <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid
+            container
+            spacing={{ xs: 2, sm: 3 }}
+            sx={{ mb: { xs: 3, md: 4 } }}
+          >
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <StatCard
                 title="Total Revenue"
@@ -482,7 +514,11 @@ const Dashboard = () => {
           </Grid>
 
           {/* Charts Row */}
-          <Grid container spacing={4} sx={{ mb: 4 }}>
+          <Grid
+            container
+            spacing={{ xs: 2, sm: 3, lg: 4 }}
+            sx={{ mb: { xs: 3, md: 4 } }}
+          >
             <Grid size={{ xs: 12, md: 4 }}>
               <CustomPieChart data={tableData} title="Table Status" />
             </Grid>
@@ -498,10 +534,18 @@ const Dashboard = () => {
           </Grid>
 
           {/* Tables and Lists */}
-          <Grid container spacing={4}>
+          <Grid container spacing={{ xs: 2, sm: 3, lg: 4 }}>
             {/* Recent Orders */}
             <Grid size={{ xs: 12, lg: 8 }}>
-              <Card elevation={3} sx={{ borderRadius: 4, height: "100%" }}>
+              <Card
+                elevation={3}
+                sx={{
+                  borderRadius: 4,
+                  height: "100%",
+                  width: "100%",
+                  overflow: "hidden",
+                }}
+              >
                 <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                   <Typography
                     variant="h6"
@@ -562,7 +606,7 @@ const Dashboard = () => {
                                 {formatTime(
                                   row.orderTime ||
                                     row.OrderTime ||
-                                    row.createdAt
+                                    row.createdAt,
                                 )}
                               </TableCell>
                               <TableCell>
@@ -617,7 +661,15 @@ const Dashboard = () => {
 
             {/* Top Selling Foods */}
             <Grid size={{ xs: 12, lg: 4 }}>
-              <Card elevation={3} sx={{ borderRadius: 4, height: "100%" }}>
+              <Card
+                elevation={3}
+                sx={{
+                  borderRadius: 4,
+                  height: "100%",
+                  width: "100%",
+                  overflow: "hidden",
+                }}
+              >
                 <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                   <Typography
                     variant="h6"
