@@ -1,0 +1,394 @@
+import React from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
+  Box,
+  IconButton,
+  Typography,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import { ImageDropzone } from "../utils/ImageConverter";
+import { BACKEND_API } from "../api/API";
+
+const EmployeeModal = ({
+  open,
+  onClose,
+  mode, // 'create', 'edit', 'view'
+  formData,
+  errors = {},
+  onChange,
+  onImageSelect,
+  onSubmit,
+}) => {
+  const [dobFocused, setDobFocused] = React.useState(false);
+  const [joinFocused, setJoinFocused] = React.useState(false);
+
+  const isView = mode === "view";
+  const title =
+    mode === "create"
+      ? "Add New Employee"
+      : mode === "edit"
+        ? "Edit Staff Member"
+        : "View Employee Details";
+
+  return (
+    <Dialog
+      disableRestoreFocus
+      open={open}
+      onClose={onClose}
+      maxWidth="lg"
+      fullWidth
+      PaperProps={{
+        sx: { borderRadius: 2, bgcolor: "background.paper" },
+      }}
+    >
+      <DialogTitle
+        sx={{
+          fontWeight: "bold",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          color: "text.primary",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box component="span" sx={{ color: "text.secondary" }}>
+            👤
+          </Box>
+          {title}
+        </Box>
+        <IconButton
+          onClick={onClose}
+          size="small"
+          sx={{ color: "text.secondary" }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+
+      <DialogContent dividers sx={{ p: 4, bgcolor: "background.default" }}>
+        {/* Top Section: Names (Left) and Image (Right) */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            gap: 4,
+            mb: 4,
+          }}
+        >
+          {/* Left: Names */}
+          <Box
+            sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 3 }}
+          >
+            <TextField
+              fullWidth
+              label="First Name"
+              name="firstName"
+              value={formData.firstName}
+              onChange={onChange}
+              required
+              disabled={isView}
+              error={!!errors.firstName}
+              helperText={errors.firstName}
+              sx={{ bgcolor: "background.paper" }}
+            />
+            <TextField
+              fullWidth
+              label="Middle Name"
+              name="middleName"
+              value={formData.middleName}
+              onChange={onChange}
+              disabled={isView}
+              sx={{ bgcolor: "background.paper" }}
+            />
+            <TextField
+              fullWidth
+              label="Last Name"
+              name="lastName"
+              value={formData.lastName}
+              onChange={onChange}
+              required
+              disabled={isView}
+              error={!!errors.lastName}
+              helperText={errors.lastName}
+              sx={{ bgcolor: "background.paper" }}
+            />
+          </Box>
+
+          {/* Right: Image Upload */}
+          <Box sx={{ flex: 1 }}>
+            <Box sx={{ height: "100%", minHeight: 220 }}>
+              {isView ? (
+                <Box
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "1px dashed",
+                    borderColor: "divider",
+                    borderRadius: 2,
+                    overflow: "hidden",
+                    p: 1,
+                    bgcolor: "background.paper",
+                  }}
+                >
+                  {formData.image || formData.base64 ? (
+                    <Box
+                      component="img"
+                      src={
+                        formData.base64
+                          ? formData.base64
+                          : `${BACKEND_API}/images/user/${formData.image}`
+                      }
+                      alt="Employee"
+                      sx={{
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                        objectFit: "contain",
+                        borderRadius: 1,
+                      }}
+                    />
+                  ) : (
+                    <Typography sx={{ color: "text.secondary" }}>
+                      No Image
+                    </Typography>
+                  )}
+                </Box>
+              ) : (
+                <ImageDropzone
+                  onImageSelect={onImageSelect}
+                  defaultImage={
+                    mode === "edit" && formData.image && !formData.base64
+                      ? `${BACKEND_API}/images/user/${formData.image}`
+                      : formData.base64
+                  }
+                  title="Upload Employee Image"
+                />
+              )}
+            </Box>
+          </Box>
+        </Box>
+
+        {/* Middle Section 1: Parents & Spouse */}
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)" },
+            gap: 3,
+            mb: 4,
+          }}
+        >
+          <TextField
+            fullWidth
+            label="Spouse Name"
+            name="spouseName"
+            value={formData.spouseName}
+            onChange={onChange}
+            required
+            disabled={isView}
+            error={!!errors.spouseName}
+            helperText={errors.spouseName}
+            sx={{ bgcolor: "background.paper" }}
+          />
+          <TextField
+            fullWidth
+            label="Father's Name"
+            name="fatherName"
+            value={formData.fatherName}
+            onChange={onChange}
+            required
+            disabled={isView}
+            error={!!errors.fatherName}
+            helperText={errors.fatherName}
+            sx={{ bgcolor: "background.paper" }}
+          />
+          <TextField
+            fullWidth
+            label="Mother's Name"
+            name="motherName"
+            value={formData.motherName}
+            onChange={onChange}
+            required
+            disabled={isView}
+            error={!!errors.motherName}
+            helperText={errors.motherName}
+            sx={{ bgcolor: "background.paper" }}
+          />
+        </Box>
+
+        {/* Middle Section 2: Contact & Role */}
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)" },
+            gap: 3,
+            mb: 4,
+          }}
+        >
+          <TextField
+            fullWidth
+            label="Designation"
+            name="designation"
+            value={formData.designation}
+            onChange={onChange}
+            required
+            disabled={isView}
+            error={!!errors.designation}
+            helperText={errors.designation}
+            sx={{ bgcolor: "background.paper" }}
+          />
+          <TextField
+            fullWidth
+            label="Email Address"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={onChange}
+            required
+            disabled={isView}
+            error={!!errors.email}
+            helperText={errors.email}
+            sx={{ bgcolor: "background.paper" }}
+          />
+          <TextField
+            fullWidth
+            label="Phone Number"
+            name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={onChange}
+            required
+            disabled={isView}
+            error={!!errors.phoneNumber}
+            helperText={errors.phoneNumber}
+            sx={{ bgcolor: "background.paper" }}
+          />
+        </Box>
+
+        {/* Bottom Section: Gender, Dates, NID */}
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "repeat(2, 1fr)",
+              md: "repeat(4, 1fr)",
+            },
+            gap: 3,
+          }}
+        >
+          <FormControl
+            fullWidth
+            required
+            disabled={isView}
+            sx={{ bgcolor: "background.paper" }}
+          >
+            <InputLabel>Gender</InputLabel>
+            <Select
+              name="genderId"
+              value={formData.genderId}
+              label="Gender"
+              onChange={onChange}
+            >
+              <MenuItem value={1}>Male</MenuItem>
+              <MenuItem value={2}>Female</MenuItem>
+              <MenuItem value={3}>Other</MenuItem>
+            </Select>
+          </FormControl>
+
+          <TextField
+            fullWidth
+            label="Date of Birth"
+            name="dob"
+            type={dobFocused || formData.dob || isView ? "date" : "text"}
+            onFocus={() => setDobFocused(true)}
+            onBlur={() => setDobFocused(false)}
+            InputLabelProps={{ shrink: dobFocused || !!formData.dob || isView }}
+            value={formData.dob}
+            onChange={onChange}
+            required
+            disabled={isView}
+            error={!!errors.dob}
+            helperText={errors.dob}
+            sx={{ bgcolor: "background.paper" }}
+          />
+
+          <TextField
+            fullWidth
+            label="Date of Join"
+            name="joinDate"
+            type={joinFocused || formData.joinDate || isView ? "date" : "text"}
+            onFocus={() => setJoinFocused(true)}
+            onBlur={() => setJoinFocused(false)}
+            InputLabelProps={{ shrink: joinFocused || !!formData.joinDate || isView }}
+            value={formData.joinDate}
+            onChange={onChange}
+            required
+            disabled={isView}
+            error={!!errors.joinDate}
+            helperText={errors.joinDate}
+            sx={{ bgcolor: "background.paper" }}
+          />
+
+          <TextField
+            fullWidth
+            label="NID Card Number"
+            name="nid"
+            value={formData.nid}
+            onChange={onChange}
+            required
+            disabled={isView}
+            error={!!errors.nid}
+            helperText={errors.nid}
+            sx={{ bgcolor: "background.paper" }}
+          />
+        </Box>
+      </DialogContent>
+
+      <DialogActions
+        sx={{
+          p: 3,
+          display: "flex",
+          justifyContent: "flex-end",
+          bgcolor: "background.paper",
+        }}
+      >
+        <Button
+          onClick={onClose}
+          variant="outlined"
+          color="inherit"
+          sx={{
+            borderRadius: 2,
+            textTransform: "none",
+            px: 3,
+            color: "text.primary",
+            borderColor: "divider",
+          }}
+        >
+          {isView ? "Close" : "Cancel Operation"}
+        </Button>
+        {!isView && (
+          <Button
+            onClick={onSubmit}
+            variant="contained"
+            color="primary"
+            sx={{ ml: 2, borderRadius: 2, textTransform: "none", px: 3 }}
+          >
+            {mode === "edit" ? "Save Changes" : "Add New Employee"}
+          </Button>
+        )}
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+export default EmployeeModal;

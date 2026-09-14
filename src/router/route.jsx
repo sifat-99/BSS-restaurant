@@ -6,6 +6,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import Profile from "../components/Profile";
 import SignupPage from "../components/SignUp";
 import Dashboard from "../components/Dashboard";
+import EmployeeList from "../components/EmployeeList";
 
 export const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ export const router = createBrowserRouter([
       {
         path: "profile",
         element: <Profile />,
+      },
+      {
+        path: "employee",
+        element: <EmployeeList />,
       },
     ],
   },

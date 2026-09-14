@@ -15,6 +15,7 @@ import ListItemText from "@mui/material/ListItemText";
 import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
 import PersonIcon from "@mui/icons-material/Person";
+import BadgeIcon from "@mui/icons-material/Badge";
 import { NavLink } from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -96,11 +97,13 @@ function DashboardMainPage(props) {
     >
       <List>
         <ListItem
+          onClick={() => navigate("/dashboard")}
           sx={{
             display: "flex",
             alignItems: "center",
             justifyContent: "flex-start",
             paddingLeft: 1,
+            cursor: "pointer",
           }}
         >
           <ListItemAvatar
@@ -142,7 +145,12 @@ function DashboardMainPage(props) {
           {showFullSidebar && (
             <Typography
               variant="h6"
-              sx={{ opacity: showFullSidebar ? 1 : 0, whiteSpace: "nowrap" }}
+              onClick={() => navigate("/dashboard")}
+              sx={{
+                opacity: showFullSidebar ? 1 : 0,
+                whiteSpace: "nowrap",
+                cursor: "pointer",
+              }}
             >
               BSS Restaurant
             </Typography>
@@ -184,6 +192,40 @@ function DashboardMainPage(props) {
             />
           </ListItemButton>
         </ListItem>
+
+        <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItemButton
+            component={NavLink}
+            to="/dashboard/employee"
+            sx={{
+              minHeight: 48,
+              justifyContent: showFullSidebar ? "initial" : "center",
+              px: 2.5,
+            }}
+            style={({ isActive }) => ({
+              backgroundColor: isActive ? "rgba(0, 0, 0, 0.08)" : "transparent",
+              color: isActive ? theme.palette.primary.main : "inherit",
+              borderLeft: isActive
+                ? `3px solid ${theme.palette.primary.main}`
+                : "3px solid transparent",
+            })}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: showFullSidebar ? 3 : "auto",
+                justifyContent: "center",
+                color: "inherit",
+              }}
+            >
+              <BadgeIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary="Employee"
+              sx={{ opacity: showFullSidebar ? 1 : 0 }}
+            />
+          </ListItemButton>
+        </ListItem>
         {/* {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
           <ListItem key={text} disablePadding sx={{ display: "block" }}>
             <ListItemButton
@@ -208,7 +250,7 @@ function DashboardMainPage(props) {
         ))} */}
       </List>
       <Divider />
-      <List>
+      {/* <List>
         {["All mail", "Trash", "Spam"].map((text, index) => (
           <ListItem key={text} disablePadding sx={{ display: "block" }}>
             <ListItemButton
@@ -234,7 +276,7 @@ function DashboardMainPage(props) {
             </ListItemButton>
           </ListItem>
         ))}
-      </List>
+      </List> */}
     </Box>
   );
 

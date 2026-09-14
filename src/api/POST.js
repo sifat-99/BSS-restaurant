@@ -1,10 +1,9 @@
-import axios from "axios";
-import { BACKEND_API } from "./API";
+import { BACKEND_API, api } from "./API";
 
 export const SignInAPI = async ({ username, password }) => {
 
     try {
-        const response = await axios.post(`${BACKEND_API}/api/Auth/signIn`, {
+        const response = await api.post(`/api/Auth/signIn`, {
             "userName": username,
             "password": password
         });
@@ -13,3 +12,16 @@ export const SignInAPI = async ({ username, password }) => {
         throw error;
     }
 }
+
+export const CreateEmployeeAPI = async (data, token) => {
+    try {
+        const response = await api.post(`/api/Employee/create`, data, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};
