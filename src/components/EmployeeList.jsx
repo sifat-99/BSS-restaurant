@@ -436,10 +436,19 @@ const EmployeeList = () => {
                           key={emp.id}
                           hover
                           sx={{
+                            "&:nth-of-type(odd)": {
+                              backgroundColor:
+                                theme.palette.mode === "dark"
+                                  ? alpha(theme.palette.primary.main, 0.05)
+                                  : alpha(theme.palette.primary.main, 0.06),
+                            },
                             "&:last-child td, &:last-child th": { border: 0 },
                             transition: "background-color 0.2s ease",
                             "&:hover": {
-                              bgcolor: alpha(theme.palette.primary.main, 0.03),
+                              bgcolor:
+                                theme.palette.mode === "dark"
+                                  ? alpha(theme.palette.primary.main, 0.15)
+                                  : alpha(theme.palette.primary.main, 0.12),
                             },
                           }}
                         >
@@ -515,7 +524,9 @@ const EmployeeList = () => {
                               {formatDate(emp.joinDate)}
                             </Typography>
                           </TableCell>
-                          <TableCell sx={{ textAlign: "right" }}>
+                          <TableCell
+                            sx={{ textAlign: "right", whiteSpace: "nowrap" }}
+                          >
                             <Tooltip title="View Details">
                               <IconButton
                                 color="info"

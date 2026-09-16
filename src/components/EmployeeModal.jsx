@@ -46,8 +46,8 @@ const EmployeeModal = ({
       onClose={onClose}
       maxWidth="lg"
       fullWidth
-      PaperProps={{
-        sx: { borderRadius: 2, bgcolor: "background.paper" },
+      slotProps={{
+        paper: { sx: { borderRadius: 2, bgcolor: "background.paper" } },
       }}
     >
       <DialogTitle

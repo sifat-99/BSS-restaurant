@@ -20,16 +20,16 @@ export const spicyTheme = createTheme({
             secondary: '#57534E',
         },
     },
-    typography: {
-        fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-        button: {
-            textTransform: 'none', // বাটনের টেক্সট সব বড় হাতের হওয়া বন্ধ করতে
-            fontWeight: 600,
-        },
-    },
-    shape: {
-        borderRadius: 8, // কার্ড এবং বাটনের বর্ডার কিছুটা রাউন্ডেড করতে
-    },
+    // typography: {
+    //     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    //     button: {
+    //         textTransform: 'none', // বাটনের টেক্সট সব বড় হাতের হওয়া বন্ধ করতে
+    //         fontWeight: 600,
+    //     },
+    // },
+    // shape: {
+    //     borderRadius: 8, // কার্ড এবং বাটনের বর্ডার কিছুটা রাউন্ডেড করতে
+    // },
     components: {
         MuiCssBaseline: {
             styleOverrides: {
@@ -69,6 +69,7 @@ export const modernTheme = createTheme({
         },
         text: {
             primary: '#0F172A', // Deep Navy
+            secondary: '#64748B', // Slate 500
         },
     },
     components: {
@@ -109,6 +110,7 @@ export const darkTheme = createTheme({
         },
         text: {
             primary: '#F3F4F6', // Light Gray
+            secondary: '#9CA3AF', // Gray 400
         },
     },
     components: {

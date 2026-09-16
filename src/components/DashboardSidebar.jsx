@@ -28,12 +28,23 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Tooltip from "@mui/material/Tooltip";
 import Button from "@mui/material/Button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../store/authSlice";
+import BottomNavigation from "@mui/material/BottomNavigation";
+import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+import Paper from "@mui/material/Paper";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 
 import BSS_ICON_Orange from "../assets/Icons/Spicy-orange.png";
 import BSS_ICON_Dark from "../assets/Icons/dark-gray.png";
 import BSS_ICON_Green from "../assets/Icons/green-modern.png";
+import {
+  FoodBankOutlined,
+  ListAltOutlined,
+  RestaurantMenu,
+  ShoppingBagOutlined,
+  TableBarOutlined,
+} from "@mui/icons-material";
 
 const drawerWidth = 240;
 const miniDrawerWidth = 65;
@@ -48,11 +59,50 @@ function DashboardMainPage(props) {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const menuItems = [
+    { label: "Home", path: "/dashboard", icon: <DashboardIcon /> },
+    // { label: "Profile", path: "/dashboard/profile", icon: <PersonIcon /> },
+    { label: "Employees", path: "/dashboard/employee", icon: <BadgeIcon /> },
+    { label: "Tables", path: "/dashboard/table", icon: <TableBarOutlined /> },
+    { label: "Foods", path: "/dashboard/food", icon: <RestaurantMenu /> },
+    {
+      label: "New Order",
+      path: "/dashboard/new-order",
+      icon: <ShoppingBagOutlined />,
+    },
+    {
+      label: "Orders",
+      path: "/dashboard/orders",
+      icon: <ListAltOutlined />,
+    },
+  ];
+
+  const getActiveTab = () => {
+    const index = menuItems.findIndex((item) => {
+      if (item.path === "/dashboard")
+        return (
+          location.pathname === "/dashboard" ||
+          location.pathname === "/dashboard/"
+        );
+      return location.pathname.startsWith(item.path);
+    });
+    return index !== -1 ? index : 0;
+  };
+  const activeTab = getActiveTab();
 
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [isBottomMenu, setIsBottomMenu] = React.useState(false);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
+    setIsBottomMenu(false);
+  };
+
+  const handleOpenBottomUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+    setIsBottomMenu(true);
   };
 
   const handleCloseUserMenu = () => {
@@ -159,95 +209,44 @@ function DashboardMainPage(props) {
       </List>
       <Divider />
       <List>
-        <ListItem disablePadding sx={{ display: "block" }}>
-          <ListItemButton
-            component={NavLink}
-            to="/dashboard/profile"
-            sx={{
-              minHeight: 48,
-              justifyContent: showFullSidebar ? "initial" : "center",
-              px: 2.5,
-            }}
-            style={({ isActive }) => ({
-              backgroundColor: isActive ? "rgba(0, 0, 0, 0.08)" : "transparent",
-              color: isActive ? theme.palette.primary.main : "inherit",
-              borderLeft: isActive
-                ? `3px solid ${theme.palette.primary.main}`
-                : "3px solid transparent",
-            })}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: showFullSidebar ? 3 : "auto",
-                justifyContent: "center",
-                color: "inherit",
-              }}
-            >
-              <PersonIcon />
-            </ListItemIcon>
-            <ListItemText
-              primary="Profile"
-              sx={{ opacity: showFullSidebar ? 1 : 0 }}
-            />
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem disablePadding sx={{ display: "block" }}>
-          <ListItemButton
-            component={NavLink}
-            to="/dashboard/employee"
-            sx={{
-              minHeight: 48,
-              justifyContent: showFullSidebar ? "initial" : "center",
-              px: 2.5,
-            }}
-            style={({ isActive }) => ({
-              backgroundColor: isActive ? "rgba(0, 0, 0, 0.08)" : "transparent",
-              color: isActive ? theme.palette.primary.main : "inherit",
-              borderLeft: isActive
-                ? `3px solid ${theme.palette.primary.main}`
-                : "3px solid transparent",
-            })}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: showFullSidebar ? 3 : "auto",
-                justifyContent: "center",
-                color: "inherit",
-              }}
-            >
-              <BadgeIcon />
-            </ListItemIcon>
-            <ListItemText
-              primary="Employee"
-              sx={{ opacity: showFullSidebar ? 1 : 0 }}
-            />
-          </ListItemButton>
-        </ListItem>
-        {/* {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-          <ListItem key={text} disablePadding sx={{ display: "block" }}>
+        {menuItems.map((item) => (
+          <ListItem key={item.label} disablePadding sx={{ display: "block" }}>
             <ListItemButton
+              component={NavLink}
+              to={item.path}
+              end={item.path === "/dashboard"}
               sx={{
                 minHeight: 48,
                 justifyContent: showFullSidebar ? "initial" : "center",
                 px: 2.5,
               }}
+              style={({ isActive }) => ({
+                backgroundColor: isActive
+                  ? "rgba(0, 0, 0, 0.08)"
+                  : "transparent",
+                color: isActive ? theme.palette.primary.main : "inherit",
+                borderLeft: isActive
+                  ? `3px solid ${theme.palette.primary.main}`
+                  : "3px solid transparent",
+              })}
             >
               <ListItemIcon
                 sx={{
                   minWidth: 0,
                   mr: showFullSidebar ? 3 : "auto",
                   justifyContent: "center",
+                  color: "inherit",
                 }}
               >
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                {item.icon}
               </ListItemIcon>
-              <ListItemText primary={text} sx={{ opacity: showFullSidebar ? 1 : 0 }} />
+              <ListItemText
+                primary={item.label}
+                sx={{ opacity: showFullSidebar ? 1 : 0, textWrap: "nowrap" }}
+              />
             </ListItemButton>
           </ListItem>
-        ))} */}
+        ))}
       </List>
       <Divider />
       {/* <List>
@@ -290,9 +289,9 @@ function DashboardMainPage(props) {
         position="fixed"
         sx={{
           width: {
-            sm: `calc(100% - ${isHovered ? drawerWidth : miniDrawerWidth}px)`,
+            md: `calc(100% - ${isHovered ? drawerWidth : miniDrawerWidth}px)`,
           },
-          ml: { sm: `${isHovered ? drawerWidth : miniDrawerWidth}px` },
+          ml: { md: `${isHovered ? drawerWidth : miniDrawerWidth}px` },
           transition: (theme) =>
             theme.transitions.create(["width", "margin"], {
               easing: theme.transitions.easing.sharp,
@@ -316,7 +315,7 @@ function DashboardMainPage(props) {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
+            sx={{ mr: 2, display: { md: "none" } }}
           >
             <MenuIcon />
           </IconButton>
@@ -380,16 +379,16 @@ function DashboardMainPage(props) {
                   </Button>
                 </Tooltip>
                 <Menu
-                  sx={{ mt: "45px" }}
+                  sx={{ mt: isBottomMenu ? "-10px" : "45px" }}
                   id="menu-appbar"
                   anchorEl={anchorElUser}
                   anchorOrigin={{
-                    vertical: "top",
+                    vertical: isBottomMenu ? "top" : "top",
                     horizontal: "right",
                   }}
                   keepMounted
                   transformOrigin={{
-                    vertical: "top",
+                    vertical: isBottomMenu ? "bottom" : "top",
                     horizontal: "right",
                   }}
                   open={Boolean(anchorElUser)}
@@ -412,8 +411,8 @@ function DashboardMainPage(props) {
       <Box
         component="nav"
         sx={{
-          width: { sm: isHovered ? drawerWidth : miniDrawerWidth },
-          flexShrink: { sm: 0 },
+          width: { md: isHovered ? drawerWidth : miniDrawerWidth },
+          flexShrink: { md: 0 },
           transition: (theme) =>
             theme.transitions.create("width", {
               easing: theme.transitions.easing.sharp,
@@ -430,7 +429,7 @@ function DashboardMainPage(props) {
           onTransitionEnd={handleDrawerTransitionEnd}
           onClose={handleDrawerClose}
           sx={{
-            display: { xs: "block", sm: "none" },
+            display: { xs: "block", md: "none" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: drawerWidth,
@@ -449,7 +448,7 @@ function DashboardMainPage(props) {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           sx={{
-            display: { xs: "none", sm: "block" },
+            display: { xs: "none", md: "block" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: isHovered ? drawerWidth : miniDrawerWidth,
@@ -471,10 +470,11 @@ function DashboardMainPage(props) {
         sx={{
           flexGrow: 1,
           p: { xs: 1.5, sm: 2, md: 3 },
+          pb: { xs: 10, sm: 10, md: 3 }, // extra space for bottom nav
           minWidth: 0,
           width: {
             xs: "100%",
-            sm: `calc(100% - ${isHovered ? drawerWidth : miniDrawerWidth}px)`,
+            md: `calc(100% - ${isHovered ? drawerWidth : miniDrawerWidth}px)`,
           },
           transition: (theme) =>
             theme.transitions.create(["width", "margin"], {
@@ -487,6 +487,58 @@ function DashboardMainPage(props) {
 
         {children}
       </Box>
+
+      {/* Bottom Navigation for Mobile/Tablet */}
+      <Paper
+        sx={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          display: { xs: "block", md: "none" },
+          zIndex: theme.zIndex.drawer + 1,
+          pb: "env(safe-area-inset-bottom)",
+        }}
+        elevation={4}
+      >
+        <BottomNavigation
+          value={activeTab}
+          onChange={(event, newValue) => {
+            if (newValue < menuItems.length) {
+              navigate(menuItems[newValue].path);
+            }
+          }}
+          sx={{
+            bgcolor:
+              theme.palette.mode === "dark"
+                ? "rgba(0, 0, 0, 0.8)"
+                : "rgba(255, 255, 255, 0.9)",
+            backdropFilter: "blur(10px)",
+            borderTop: `1px solid ${theme.palette.divider}`,
+          }}
+        >
+          {menuItems.map((item) => (
+            <BottomNavigationAction
+              key={item.label}
+              icon={item.icon}
+              sx={{ minWidth: 0, padding: "6px 0" }}
+            />
+          ))}
+          {user && (
+            <BottomNavigationAction
+              icon={
+                <Avatar
+                  alt={user.fullName}
+                  src={user.image}
+                  sx={{ width: 24, height: 24 }}
+                />
+              }
+              onClick={handleOpenBottomUserMenu}
+              sx={{ minWidth: 0, padding: "6px 0" }}
+            />
+          )}
+        </BottomNavigation>
+      </Paper>
     </Box>
   );
 }

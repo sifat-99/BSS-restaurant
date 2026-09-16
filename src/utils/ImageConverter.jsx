@@ -53,6 +53,10 @@ export const ImageDropzone = ({
 
   const handleFileProcess = async (file) => {
     if (file && file.type.startsWith("image/")) {
+      if (file.size > 500 * 1024) {
+        alert("Image size must be less than 500KB.");
+        return;
+      }
       try {
         const base64 = await encodeImageToBase64(file);
         setPreview(base64);

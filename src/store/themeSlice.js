@@ -1,7 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const getInitialTheme = () => {
+  const savedTheme = localStorage.getItem('appTheme');
+  return savedTheme || 'spicy';
+};
+
 const initialState = {
-  themeName: 'spicy',
+  themeName: getInitialTheme(),
 };
 
 export const themeSlice = createSlice({
@@ -10,6 +15,7 @@ export const themeSlice = createSlice({
   reducers: {
     setThemeName: (state, action) => {
       state.themeName = action.payload;
+      localStorage.setItem('appTheme', action.payload);
     },
   },
 });

@@ -1,5 +1,18 @@
 import { Box, Paper } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import { keyframes } from "@mui/system";
+
+const floatAnimation = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+`;
+
+const floatSlowAnimation = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0px); }
+`;
 
 const DynamicDashboardIllustration = () => (
   <Box
@@ -20,6 +33,7 @@ const DynamicDashboardIllustration = () => (
         zIndex: 1,
         border: "1px solid",
         borderColor: "divider",
+        animation: `${floatSlowAnimation} 4s ease-in-out infinite`,
       }}
     >
       {/* Browser Header */}
@@ -154,6 +168,8 @@ const DynamicDashboardIllustration = () => (
         border: "1px solid",
         borderColor: "grey.300",
         zIndex: 2,
+        animation: `${floatAnimation} 3s ease-in-out infinite`,
+        animationDelay: "0s",
       }}
     >
       <MenuIcon sx={{ fontSize: 20, color: "primary.main" }} />
@@ -189,6 +205,8 @@ const DynamicDashboardIllustration = () => (
         border: "1px solid",
         borderColor: "grey.300",
         zIndex: 2,
+        animation: `${floatAnimation} 3.5s ease-in-out infinite`,
+        animationDelay: "1s",
       }}
     >
       <MenuIcon sx={{ fontSize: 20, color: "primary.main" }} />
@@ -224,6 +242,8 @@ const DynamicDashboardIllustration = () => (
         border: "1px solid",
         borderColor: "grey.300",
         zIndex: 2,
+        animation: `${floatAnimation} 2.8s ease-in-out infinite`,
+        animationDelay: "0.5s",
       }}
     >
       <MenuIcon sx={{ fontSize: 20, color: "primary.main" }} />

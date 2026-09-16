@@ -105,6 +105,23 @@ const employeeSlice = createSlice({
       .addCase(fetchEmployees.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to fetch employees";
+      })
+      .addCase(createEmployee.fulfilled, (state, action) => {
+        const newItem = action.payload?.id ? action.payload : { ...action.meta.arg.data, id: Date.now() };
+        state.employees = [...state.employees, newItem];
+        state.totalCount += 1;
+      })
+      .addCase(updateEmployee.fulfilled, (state, action) => {
+        const { id, data } = action.meta.arg;
+        const index = state.employees.findIndex(item => item.id === id);
+        if (index !== -1) {
+          state.employees[index] = { ...state.employees[index], ...data };
+        }
+      })
+      .addCase(deleteEmployee.fulfilled, (state, action) => {
+        const id = action.meta.arg.id;
+        state.employees = state.employees.filter(item => item.id !== id);
+        state.totalCount -= 1;
       });
   },
 });

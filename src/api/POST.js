@@ -25,3 +25,29 @@ export const CreateEmployeeAPI = async (data, token) => {
         throw error;
     }
 };
+
+export const CreateTableAPI = async (data, token) => {
+    try {
+        const response = await api.post(`/api/Table/create`, data, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const CreateFoodAPI = async (data, token) => {
+    try {
+        const response = await api.post(`/api/Food/create`, data, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};

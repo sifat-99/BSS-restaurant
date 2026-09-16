@@ -1,5 +1,12 @@
 import { Box, Paper } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
+import { keyframes } from '@mui/system';
+
+const floatAnimation = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+`;
 
 const DynamicManagementIllustration = () => (
   <Box
@@ -20,6 +27,8 @@ const DynamicManagementIllustration = () => (
         border: "1px solid",
         borderColor: "divider",
         zIndex: 1,
+        animation: `${floatAnimation} 3.5s ease-in-out infinite`,
+        animationDelay: '1s',
       }}
     >
       <Box
@@ -68,6 +77,8 @@ const DynamicManagementIllustration = () => (
         border: "1px solid",
         borderColor: "divider",
         zIndex: 2,
+        animation: `${floatAnimation} 3s ease-in-out infinite`,
+        animationDelay: '0s',
       }}
     >
       <Box
@@ -125,6 +136,8 @@ const DynamicManagementIllustration = () => (
         border: "1px solid",
         borderColor: "divider",
         zIndex: 3,
+        animation: `${floatAnimation} 4s ease-in-out infinite`,
+        animationDelay: '0.5s',
       }}
     >
       <Box

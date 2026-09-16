@@ -1,5 +1,17 @@
 import React from 'react';
 import { Box, Paper } from '@mui/material';
+import { keyframes } from '@mui/system';
+
+const floatSlowAnimation = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0px); }
+`;
+
+const barAnimation = keyframes`
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.6); }
+`;
 
 const AnalyticsIllustration = () => (
   <Box sx={{ position: 'relative', width: 260, height: 180, mx: 'auto', mb: 6 }}>
@@ -9,7 +21,8 @@ const AnalyticsIllustration = () => (
       sx={{ 
         width: '100%', height: '100%', borderRadius: 2, p: 2, 
         bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider',
-        display: 'flex', gap: 2
+        display: 'flex', gap: 2,
+        animation: `${floatSlowAnimation} 4s ease-in-out infinite`
       }}
     >
       {/* Left side list */}
@@ -38,11 +51,11 @@ const AnalyticsIllustration = () => (
          </svg>
          
          {/* Bar chart simulation */}
-         <Box sx={{ width: 14, height: '30%', bgcolor: 'primary.main', borderRadius: '2px 2px 0 0', zIndex: 1, ml: 1 }} />
-         <Box sx={{ width: 14, height: '60%', bgcolor: 'primary.main', borderRadius: '2px 2px 0 0', zIndex: 1 }} />
-         <Box sx={{ width: 14, height: '40%', bgcolor: 'primary.main', borderRadius: '2px 2px 0 0', zIndex: 1 }} />
-         <Box sx={{ width: 14, height: '80%', bgcolor: 'primary.main', borderRadius: '2px 2px 0 0', zIndex: 1 }} />
-         <Box sx={{ width: 14, height: '50%', bgcolor: 'primary.main', borderRadius: '2px 2px 0 0', zIndex: 1 }} />
+         <Box sx={{ width: 14, height: '30%', bgcolor: 'primary.main', borderRadius: '2px 2px 0 0', zIndex: 1, ml: 1, transformOrigin: 'bottom', animation: `${barAnimation} 2s ease-in-out infinite`, animationDelay: '0s' }} />
+         <Box sx={{ width: 14, height: '60%', bgcolor: 'primary.main', borderRadius: '2px 2px 0 0', zIndex: 1, transformOrigin: 'bottom', animation: `${barAnimation} 2.5s ease-in-out infinite`, animationDelay: '0.2s' }} />
+         <Box sx={{ width: 14, height: '40%', bgcolor: 'primary.main', borderRadius: '2px 2px 0 0', zIndex: 1, transformOrigin: 'bottom', animation: `${barAnimation} 2.2s ease-in-out infinite`, animationDelay: '0.4s' }} />
+         <Box sx={{ width: 14, height: '80%', bgcolor: 'primary.main', borderRadius: '2px 2px 0 0', zIndex: 1, transformOrigin: 'bottom', animation: `${barAnimation} 2.7s ease-in-out infinite`, animationDelay: '0.1s' }} />
+         <Box sx={{ width: 14, height: '50%', bgcolor: 'primary.main', borderRadius: '2px 2px 0 0', zIndex: 1, transformOrigin: 'bottom', animation: `${barAnimation} 2.4s ease-in-out infinite`, animationDelay: '0.3s' }} />
       </Box>
     </Paper>
   </Box>

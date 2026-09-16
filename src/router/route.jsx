@@ -7,6 +7,10 @@ import Profile from "../components/Profile";
 import SignupPage from "../components/SignUp";
 import Dashboard from "../components/Dashboard";
 import EmployeeList from "../components/EmployeeList";
+import TableList from "../components/TableList";
+import FoodList from "../components/FoodList";
+import OrderPage from "../components/OrderPage";
+import Orders from "../components/Orders";
 
 export const router = createBrowserRouter([
   {
@@ -35,6 +39,22 @@ export const router = createBrowserRouter([
       {
         path: "employee",
         element: <EmployeeList />,
+      },
+      {
+        path: "table",
+        element: <TableList />,
+      },
+      {
+        path: "food",
+        element: <FoodList />,
+      },
+      {
+        path: "new-order",
+        element: <OrderPage />,
+      },
+      {
+        path: "orders",
+        element: <Orders />,
       },
     ],
   },

@@ -48,3 +48,39 @@ export const GetEmployeeDatatableAPI = async (token, page = 1, perPage = 10, sea
         throw error;
     }
 };
+
+export const GetTableListAPI = async (token, page = 1, perPage = 10, search = "") => {
+    try {
+        const response = await api.get(`api/Table/datatable`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            params: {
+                Page: page,
+                Per_Page: perPage,
+                Search: search
+            }
+        });
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const GetFoodListApi = async (token, page = 1, perPage = 10, search = "") => {
+    try {
+        const response = await api.get(`api/Food/datatable`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            params: {
+                Page: page,
+                Per_Page: perPage,
+                Search: search
+            }
+        });
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};

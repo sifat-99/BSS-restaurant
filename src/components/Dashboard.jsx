@@ -570,22 +570,34 @@ const Dashboard = () => {
                         }}
                       >
                         <TableRow>
-                          <TableCell sx={{ fontWeight: "bold" }}>
+                          <TableCell
+                            sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}
+                          >
                             Order ID
                           </TableCell>
-                          <TableCell sx={{ fontWeight: "bold" }}>
+                          <TableCell
+                            sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}
+                          >
                             Customer
                           </TableCell>
-                          <TableCell sx={{ fontWeight: "bold" }}>
+                          <TableCell
+                            sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}
+                          >
                             Date
                           </TableCell>
-                          <TableCell sx={{ fontWeight: "bold" }}>
+                          <TableCell
+                            sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}
+                          >
                             Table
                           </TableCell>
-                          <TableCell sx={{ fontWeight: "bold" }}>
+                          <TableCell
+                            sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}
+                          >
                             Amount
                           </TableCell>
-                          <TableCell sx={{ fontWeight: "bold" }}>
+                          <TableCell
+                            sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}
+                          >
                             Status
                           </TableCell>
                         </TableRow>
@@ -594,15 +606,15 @@ const Dashboard = () => {
                         {recentOrders.length > 0 ? (
                           recentOrders.slice(0, 5).map((row, index) => (
                             <TableRow key={index} hover>
-                              <TableCell>
+                              <TableCell sx={{ whiteSpace: "nowrap" }}>
                                 {row.orderNumber || `#ORD-${index + 100}`}
                               </TableCell>
-                              <TableCell>
+                              <TableCell sx={{ whiteSpace: "nowrap" }}>
                                 {row.customerName ||
                                   row.CustomerName ||
                                   "Walk-in"}
                               </TableCell>
-                              <TableCell>
+                              <TableCell sx={{ whiteSpace: "nowrap" }}>
                                 {formatTime(
                                   row.orderTime ||
                                     row.OrderTime ||
@@ -612,7 +624,9 @@ const Dashboard = () => {
                               <TableCell>
                                 {row.tableNumber || row.TableNumber || "N/A"}
                               </TableCell>
-                              <TableCell fontWeight="500">
+                              <TableCell
+                                sx={{ whiteSpace: "nowrap", fontWeight: "500" }}
+                              >
                                 ৳
                                 {row.amount ||
                                   row.Amount ||
