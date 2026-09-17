@@ -11,17 +11,20 @@ export const fetchOrders = createAsyncThunk(
 
       let data = [];
       let totalPages = 1;
+      let totalCount = 0;
       const responseData = response.data;
 
       if (responseData && responseData.data) {
         data = responseData.data;
         totalPages = responseData.last_page || responseData.totalPages || Math.ceil((responseData.total || 0) / perPage) || 1;
+        totalCount = responseData.total || data.length;
       } else if (Array.isArray(responseData)) {
         data = responseData;
         totalPages = 1;
+        totalCount = data.length;
       }
 
-      return { data, totalPages, page, perPage, search, sort, status };
+      return { data, totalPages, totalCount, page, perPage, search, sort, status };
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to fetch orders.");
     }
@@ -86,6 +89,7 @@ const orderSlice = createSlice({
     page: 1,
     perPage: 12,
     totalPages: 1,
+    totalCount: 0,
     search: "",
     sort: "createdat",
     status: "",
@@ -109,6 +113,7 @@ const orderSlice = createSlice({
         state.loading = false;
         state.orders = action.payload.data;
         state.totalPages = action.payload.totalPages;
+        state.totalCount = action.payload.totalCount;
         state.page = action.payload.page;
         state.perPage = action.payload.perPage;
         state.search = action.payload.search;

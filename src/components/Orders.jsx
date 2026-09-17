@@ -1,37 +1,41 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   Box,
   Typography,
-  Grid,
   Card,
   CardContent,
-  Chip,
-  CircularProgress,
-  TextField,
-  InputAdornment,
-  Pagination,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  CardActionArea,
-  Divider,
-  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
   Avatar,
-  Menu,
+  CircularProgress,
+  IconButton,
+  TablePagination,
+  TextField,
+  Button,
+  Grid,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
   DialogActions,
-  Button,
+  Tooltip,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Menu,
+  Chip,
+  Divider,
 } from "@mui/material";
 import {
   Search,
   Receipt,
-  CalendarToday,
-  AttachMoney,
   SyncAlt,
   Edit,
   Delete,
@@ -84,7 +88,7 @@ const Orders = () => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
 
-  const { orders, loading, page, perPage, totalPages, search, sort, status } =
+  const { orders, loading, page, perPage, totalCount, search, sort, status } =
     useSelector((state) => state.order);
 
   const [localSearch, setLocalSearch] = useState(search);
@@ -92,6 +96,9 @@ const Orders = () => {
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [orderToEdit, setOrderToEdit] = useState(null);
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [orderToDelete, setOrderToDelete] = useState(null);
 
   const handleEditClick = (order) => {
     setOrderToEdit(order);
@@ -144,12 +151,27 @@ const Orders = () => {
     if (token && orders.length === 0 && !loading) {
       dispatch(fetchOrders({ token, page, perPage, search, sort, status }));
     }
-  }, [dispatch, token]); // only run once or on token change
+  }, [dispatch, token]);
 
-  const handlePageChange = (event, value) => {
-    dispatch(setOrderFilters({ page: value }));
+  const handleChangePage = (event, newPage) => {
+    dispatch(setOrderFilters({ page: newPage + 1 }));
     dispatch(
-      fetchOrders({ token, page: value, perPage, search, sort, status }),
+      fetchOrders({ token, page: newPage + 1, perPage, search, sort, status }),
+    );
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    const newPerPage = parseInt(event.target.value, 10);
+    dispatch(setOrderFilters({ perPage: newPerPage, page: 1 }));
+    dispatch(
+      fetchOrders({
+        token,
+        page: 1,
+        perPage: newPerPage,
+        search,
+        sort,
+        status,
+      }),
     );
   };
 
@@ -168,9 +190,6 @@ const Orders = () => {
       fetchOrders({ token, page: 1, perPage, search, sort: newSort, status }),
     );
   };
-
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [orderToDelete, setOrderToDelete] = useState(null);
 
   const handleOrderDelete = (orderId) => {
     setOrderToDelete(orderId);
@@ -191,57 +210,68 @@ const Orders = () => {
   };
 
   return (
-    <Box
-      sx={{
-        p: { xs: 2, md: 4 },
-        height: "calc(100vh - 120px)",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      {/* Header & Filters */}
+    <Box sx={{ p: { xs: 1, sm: 2, md: 3 } }}>
       <Box
         sx={{
-          mb: 4,
           display: "flex",
           flexDirection: { xs: "column", md: "row" },
           justifyContent: "space-between",
-          alignItems: { xs: "stretch", md: "center" },
+          alignItems: { xs: "flex-start", md: "center" },
           gap: 2,
+          mb: 4,
+          background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)} 0%, ${alpha(theme.palette.secondary.main, 0.1)} 100%)`,
+          p: { xs: 2, sm: 3 },
+          borderRadius: 4,
+          boxShadow: `0 4px 20px ${alpha(theme.palette.common.black, 0.05)}`,
         }}
       >
-        <Typography
-          variant="h4"
-          fontWeight="bold"
-          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-        >
-          <Receipt fontSize="large" color="primary" /> Orders
-        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Avatar
+            sx={{ bgcolor: theme.palette.primary.main, width: 56, height: 56 }}
+          >
+            <Receipt fontSize="large" />
+          </Avatar>
+          <Box>
+            <Typography
+              variant="h4"
+              sx={{ typography: { xs: "h5", sm: "h4" } }}
+              fontWeight="bold"
+              color="primary.main"
+            >
+              Orders Management
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{ typography: { xs: "body2", sm: "body1" } }}
+              color="text.secondary"
+            >
+              Manage and track customer orders.
+            </Typography>
+          </Box>
+        </Box>
 
         <Box
           sx={{
             display: "flex",
-            gap: 2,
             flexDirection: { xs: "column", sm: "row" },
+            gap: 2,
+            alignItems: { xs: "stretch", sm: "center" },
+            width: { xs: "100%", md: "auto" },
           }}
         >
           <TextField
-            variant="outlined"
             size="small"
             placeholder="Search orders..."
+            variant="outlined"
             value={localSearch}
             onChange={(e) => setLocalSearch(e.target.value)}
-            sx={{ width: { xs: "100%", sm: "250px" } }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search color="action" />
-                </InputAdornment>
-              ),
-            }}
+            sx={{ bgcolor: "background.paper", borderRadius: 1 }}
           />
 
-          <FormControl size="small" sx={{ minWidth: 150 }}>
+          <FormControl
+            size="small"
+            sx={{ minWidth: 150, bgcolor: "background.paper" }}
+          >
             <InputLabel>Status</InputLabel>
             <Select value={status} label="Status" onChange={handleStatusChange}>
               <MenuItem value="">All Statuses</MenuItem>
@@ -253,7 +283,10 @@ const Orders = () => {
             </Select>
           </FormControl>
 
-          <FormControl size="small" sx={{ minWidth: 150 }}>
+          <FormControl
+            size="small"
+            sx={{ minWidth: 150, bgcolor: "background.paper" }}
+          >
             <InputLabel>Sort By</InputLabel>
             <Select value={sort} label="Sort By" onChange={handleSortChange}>
               <MenuItem value="-createdat">Newest First</MenuItem>
@@ -265,9 +298,8 @@ const Orders = () => {
         </Box>
       </Box>
 
-      {/* Orders Grid */}
       <Box sx={{ flexGrow: 1, overflowY: "auto", pb: 2, pr: 1 }}>
-        {loading ? (
+        {loading && orders.length === 0 ? (
           <Box
             sx={{
               display: "flex",
@@ -276,7 +308,7 @@ const Orders = () => {
               height: "100%",
             }}
           >
-            <CircularProgress />
+            <CircularProgress size={60} thickness={4} />
           </Box>
         ) : orders.length === 0 ? (
           <Box
@@ -287,6 +319,7 @@ const Orders = () => {
               height: "100%",
               flexDirection: "column",
               color: "text.secondary",
+              py: 10,
             }}
           >
             <Receipt sx={{ fontSize: 80, opacity: 0.2, mb: 2 }} />
@@ -298,8 +331,6 @@ const Orders = () => {
               const statusInfo = getStatusInfo(
                 order.orderStatus || order.status,
               );
-
-              // Extract items
               const items =
                 order.orderItems || order.orderDetails || order.items || [];
               const totalQuantity =
@@ -325,7 +356,6 @@ const Orders = () => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    // width: "100%",
                     margin: "auto",
                   }}
                 >
@@ -335,7 +365,8 @@ const Orders = () => {
                       borderRadius: 3,
                       border: `1px solid ${alpha(theme.palette.divider, 0.5)}`,
                       height: "400px",
-                      width: "400px",
+                      width: { xs: "100%", sm: "400px" },
+                      maxWidth: "100%",
                       display: "flex",
                       flexDirection: "column",
                       bgcolor: "background.paper",
@@ -452,9 +483,7 @@ const Orders = () => {
                         flexGrow: 1,
                         overflowY: "auto",
                         maxHeight: 250,
-                        "&::-webkit-scrollbar": {
-                          display: "none",
-                        },
+                        "&::-webkit-scrollbar": { display: "none" },
                         msOverflowStyle: "none",
                         scrollbarWidth: "none",
                       }}
@@ -577,7 +606,6 @@ const Orders = () => {
                             fontWeight="bold"
                             color="text.primary"
                             sx={{
-                              textDecoration: "none",
                               fontSize: "1.3rem",
                               fontFamily: "Sarabun",
                               fontWeight: 700,
@@ -587,7 +615,7 @@ const Orders = () => {
                           >
                             {parseFloat(
                               order.amount || order.totalAmount || 0,
-                            ).toFixed(2)}
+                            ).toFixed(2)}{" "}
                             ৳
                           </Typography>
                         </Typography>
@@ -632,25 +660,33 @@ const Orders = () => {
         )}
       </Box>
 
-      {/* Pagination */}
-      {!loading && totalPages > 1 && (
-        <Box
+      {/* Pagination Table-style */}
+      {!loading && (
+        <Paper
           sx={{
             display: "flex",
             justifyContent: "center",
-            mt: 3,
+            mt: 2,
+            borderRadius: 2,
+            border: `1px solid ${theme.palette.divider}`,
+            boxShadow: "none",
             flexShrink: 0,
           }}
         >
-          <Pagination
-            count={totalPages}
-            page={page}
-            onChange={handlePageChange}
-            color="primary"
-            size="large"
-            shape="rounded"
+          <TablePagination
+            rowsPerPageOptions={[12, 24, 48, 96]}
+            component="div"
+            count={totalCount || 0}
+            rowsPerPage={perPage}
+            page={page - 1}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            sx={{
+              borderBottom: "none",
+              ".MuiTablePagination-toolbar": { minHeight: 48 },
+            }}
           />
-        </Box>
+        </Paper>
       )}
 
       {/* Status Change Menu */}

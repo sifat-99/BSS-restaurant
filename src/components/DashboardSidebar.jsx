@@ -41,6 +41,7 @@ import BSS_ICON_Green from "../assets/Icons/green-modern.png";
 import {
   FoodBankOutlined,
   ListAltOutlined,
+  Logout,
   RestaurantMenu,
   ShoppingBagOutlined,
   TableBarOutlined,
@@ -142,7 +143,7 @@ function DashboardMainPage(props) {
       sx={{
         display: "flex",
         flexDirection: "column",
-        // alignItems: "center",
+        height: "100%",
       }}
     >
       <List>
@@ -151,20 +152,21 @@ function DashboardMainPage(props) {
           sx={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "flex-start",
-            paddingLeft: 1,
+            justifyContent: "center",
             cursor: "pointer",
+            marginBottom: -1.1,
           }}
         >
           <ListItemAvatar
             sx={{
-              marginRight: 2,
+              marginRight: 0,
             }}
           >
             <Avatar
               sx={{
-                width: 50,
-                height: 50,
+                width: 40,
+                height: 40,
+                margin: "auto",
                 justifyContent: "center",
                 alignItems: "center",
                 objectFit: "cover",
@@ -248,7 +250,48 @@ function DashboardMainPage(props) {
           </ListItem>
         ))}
       </List>
-      <Divider />
+      {/* Logout Button in the end */}
+
+      <ListItem
+        disablePadding
+        sx={{
+          display: "block",
+          flex: 1,
+          alignItems: "flex-end",
+          justifyContent: "flex-end",
+          marginBottom: "20px",
+        }}
+      >
+        <ListItemButton
+          sx={{
+            minHeight: 48,
+            justifyContent: showFullSidebar ? "initial" : "center",
+            px: 2.5,
+            flex: 1,
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+          }}
+          onClick={handleLogout}
+        >
+          <ListItemIcon
+            sx={{
+              minWidth: 0,
+              mr: showFullSidebar ? 3 : "auto",
+              justifyContent: "center",
+            }}
+          >
+            <Logout />
+          </ListItemIcon>
+          <ListItemText
+            primary="Logout"
+            sx={{ opacity: showFullSidebar ? 1 : 0 }}
+          />
+        </ListItemButton>
+      </ListItem>
+
+      {/* <Divider /> */}
       {/* <List>
         {["All mail", "Trash", "Spam"].map((text, index) => (
           <ListItem key={text} disablePadding sx={{ display: "block" }}>
@@ -297,8 +340,8 @@ function DashboardMainPage(props) {
               easing: theme.transitions.easing.sharp,
               duration: theme.transitions.duration.enteringScreen,
             }),
-          paddingTop: 1,
-          paddingBottom: 1,
+          // paddingTop: 1,
+          // paddingBottom: 1.3,
           backgroundColor:
             theme.palette.mode === "dark"
               ? "rgba(0, 0, 0, 0.2)"
@@ -331,7 +374,7 @@ function DashboardMainPage(props) {
               variant="h6"
               noWrap
               component="div"
-              sx={{ flexGrow: 1 }}
+              sx={{ flexGrow: 1, cursor: "pointer" }}
               onClick={() => navigate("/dashboard")}
               cursor="pointer"
             >
@@ -363,9 +406,11 @@ function DashboardMainPage(props) {
                   >
                     <Avatar
                       alt={user.fullName}
-                      src={user.image}
+                      src={user?.image || "A"}
                       sx={{ width: 36, height: 36 }}
-                    />
+                    >
+                      {/* <PersonIcon /> */}
+                    </Avatar>
                     <Typography
                       variant="subtitle2"
                       sx={{
@@ -434,6 +479,7 @@ function DashboardMainPage(props) {
               boxSizing: "border-box",
               width: drawerWidth,
             },
+            // height: "100vh",
           }}
           slotProps={{
             root: {
@@ -484,7 +530,6 @@ function DashboardMainPage(props) {
         }}
       >
         <Toolbar />
-
         {children}
       </Box>
 
