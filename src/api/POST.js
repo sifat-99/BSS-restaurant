@@ -51,3 +51,14 @@ export const CreateFoodAPI = async (data, token) => {
         throw error;
     }
 };
+
+export const CreateEmployeeTableRangeAPI = async (data, token) => {
+    try {
+        const response = await api.post(`/api/EmployeeTable/create-range`, data, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};

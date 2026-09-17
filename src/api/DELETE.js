@@ -38,3 +38,14 @@ export const DeleteFoodAPI = async (id, token) => {
         throw error;
     }
 };
+
+export const DeleteEmployeeTableAPI = async (id, token) => {
+    try {
+        const response = await api.delete(`/api/EmployeeTable/delete/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};

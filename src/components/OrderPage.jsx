@@ -31,7 +31,7 @@ import {
   Search,
 } from "@mui/icons-material";
 import { useTheme, alpha } from "@mui/material/styles";
-import { fetchTables } from "../store/tableSlice";
+import { fetchOrderTables } from "../store/tableSlice";
 import { fetchFoods } from "../store/foodSlice";
 import { setTable, addToCart } from "../store/cartSlice";
 import { BACKEND_API } from "../api/API";
@@ -45,10 +45,10 @@ const OrderPage = () => {
   const token = useSelector((state) => state.auth.token);
   const [searchQuery, setSearchQuery] = useState("");
   const {
-    tables,
-    loading: tableLoading,
-    page: tablePage,
-    lastPage: tableLastPage,
+    orderTables: tables,
+    orderTableLoading: tableLoading,
+    orderTablePage: tablePage,
+    orderTableLastPage: tableLastPage,
   } = useSelector((state) => state.table);
   const { foods, loading: foodLoading } = useSelector((state) => state.food);
   const { selectedTable, cartItems } = useSelector((state) => state.cart);
@@ -56,7 +56,7 @@ const OrderPage = () => {
   useEffect(() => {
     if (token) {
       // Ensure we have initial data (5 tables)
-      dispatch(fetchTables({ token, page: 1, perPage: 5 }));
+      dispatch(fetchOrderTables({ token, page: 1, perPage: 5 }));
       dispatch(fetchFoods({ token, perPage: 100 }));
     }
   }, [dispatch, token]);
@@ -76,7 +76,7 @@ const OrderPage = () => {
     if (isBottom || isRight) {
       if (!tableLoading && tablePage < tableLastPage) {
         dispatch(
-          fetchTables({
+          fetchOrderTables({
             token,
             page: tablePage + 1,
             perPage: 5,
@@ -211,6 +211,11 @@ const OrderPage = () => {
                       height: "100%",
                       gap: 2,
                     }}
+                    disabled={table.isOccupied}
+                    style={{
+                      cursor: table.isOccupied ? "not-allowed" : "pointer",
+                      filter: table.isOccupied ? "grayscale(100%)" : "none",
+                    }}
                   >
                     <Avatar
                       src={
@@ -238,8 +243,8 @@ const OrderPage = () => {
                         Table {table.tableNumber || table.id}
                       </Typography>
                       <Chip
-                        label={table.status || "Available"}
-                        color="success"
+                        label={table.isOccupied ? "Occupied" : "Available"}
+                        color={table.isOccupied ? "error" : "success"}
                         size="small"
                         sx={{
                           mt: 0.5,
@@ -533,6 +538,7 @@ const OrderPage = () => {
                         <TableBody>
                           {filteredFoods.map((food) => (
                             <TableRow
+                              hover
                               key={food.id}
                               sx={{
                                 "&:last-child td, &:last-child th": {
@@ -540,8 +546,8 @@ const OrderPage = () => {
                                 },
                                 "&:hover": {
                                   bgcolor: alpha(
-                                    theme.palette.action.hover,
-                                    0.5,
+                                    theme.palette.primary.main,
+                                    0.04,
                                   ),
                                 },
                               }}

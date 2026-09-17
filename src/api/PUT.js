@@ -38,3 +38,16 @@ export const UpdateFoodAPI = async (id, data, token) => {
         throw error;
     }
 };
+
+export const UpdateOrderStatusAPI = async (id, data, token) => {
+    try {
+        const response = await api.put(`/api/Order/update-status/${id}`, data, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};

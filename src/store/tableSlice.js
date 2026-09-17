@@ -14,7 +14,6 @@ export const fetchTables = createAsyncThunk(
             let totalCount = 0;
             let lastPage = 1;
 
-            // Ensure we parse correctly based on the JSON response format
             if (response.data && Array.isArray(response.data.data)) {
                 data = response.data.data;
                 totalCount = response.data.total || data.length;
@@ -30,6 +29,35 @@ export const fetchTables = createAsyncThunk(
             return { data, totalCount, page, perPage, search, lastPage };
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Failed to fetch tables.");
+        }
+    }
+);
+
+export const fetchOrderTables = createAsyncThunk(
+    "table/fetchOrderTables",
+    async ({ token, page = 1, perPage = 5, search = "" }, { rejectWithValue }) => {
+        try {
+            const response = await GetTableListAPI(token, page, perPage, search);
+
+            let data = [];
+            let totalCount = 0;
+            let lastPage = 1;
+
+            if (response.data && Array.isArray(response.data.data)) {
+                data = response.data.data;
+                totalCount = response.data.total || data.length;
+                lastPage = response.data.last_page || 1;
+            } else if (response.data && Array.isArray(response.data)) {
+                data = response.data;
+                totalCount = data.length;
+            } else if (Array.isArray(response)) {
+                data = response;
+                totalCount = data.length;
+            }
+
+            return { data, totalCount, page, perPage, search, lastPage };
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Failed to fetch order tables.");
         }
     }
 );
@@ -84,6 +112,11 @@ const tableSlice = createSlice({
         lastPage: 1,
         loading: false,
         error: null,
+        // Separate state for OrderPage tables
+        orderTables: [],
+        orderTablePage: 1,
+        orderTableLastPage: 1,
+        orderTableLoading: false,
     },
     reducers: {
         setPagination: (state, action) => {
@@ -119,10 +152,31 @@ const tableSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload || "Failed to fetch tables";
             })
+            .addCase(fetchOrderTables.pending, (state) => {
+                state.orderTableLoading = true;
+            })
+            .addCase(fetchOrderTables.fulfilled, (state, action) => {
+                state.orderTableLoading = false;
+                if (action.meta.arg && action.meta.arg.isLoadMore) {
+                    const newTables = action.payload.data.filter(
+                        (newTable) => !state.orderTables.some((existing) => existing.id === newTable.id)
+                    );
+                    state.orderTables = [...state.orderTables, ...newTables];
+                } else {
+                    state.orderTables = action.payload.data;
+                }
+                state.orderTablePage = action.payload.page;
+                state.orderTableLastPage = action.payload.lastPage;
+            })
+            .addCase(fetchOrderTables.rejected, (state, action) => {
+                state.orderTableLoading = false;
+            })
             .addCase(createTable.fulfilled, (state, action) => {
                 const newItem = action.payload?.id ? action.payload : { ...action.meta.arg.data, id: Date.now() };
                 state.tables = [...state.tables, newItem];
                 state.totalCount += 1;
+                // Optionally update orderTables too if it matches
+                state.orderTables = [...state.orderTables, newItem];
             })
             .addCase(updateTable.fulfilled, (state, action) => {
                 const { id, data } = action.meta.arg;
@@ -130,11 +184,16 @@ const tableSlice = createSlice({
                 if (index !== -1) {
                     state.tables[index] = { ...state.tables[index], ...data };
                 }
+                const orderIndex = state.orderTables.findIndex(item => item.id === id);
+                if (orderIndex !== -1) {
+                    state.orderTables[orderIndex] = { ...state.orderTables[orderIndex], ...data };
+                }
             })
             .addCase(deleteTable.fulfilled, (state, action) => {
                 const id = action.meta.arg.id;
                 state.tables = state.tables.filter(item => item.id !== id);
                 state.totalCount -= 1;
+                state.orderTables = state.orderTables.filter(item => item.id !== id);
             });
     },
 });

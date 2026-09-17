@@ -84,3 +84,36 @@ export const GetFoodListApi = async (token, page = 1, perPage = 10, search = "")
         throw error;
     }
 };
+
+export const GetAllOrdersDataTableApi = async (token, page = 1, perPage = 10, search = "", sort = "", status = "") => {
+    try {
+        const params = {
+            Page: page,
+            Per_Page: perPage,
+        };
+        if (search) params.Search = search;
+        if (sort) params.Sort = sort;
+        if (status !== "") params.Status = status;
+
+        const response = await api.get(`api/Order/datatable`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            params
+        });
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const GetNonAssignedEmployeesAPI = async (token, tableId) => {
+    try {
+        const response = await api.get(`/api/Employee/non-assigned-employees/${tableId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};

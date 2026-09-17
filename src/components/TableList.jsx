@@ -8,6 +8,9 @@ import {
 } from "../store/tableSlice";
 import { fetchEmployees } from "../store/employeeSlice";
 import { BACKEND_API } from "../api/API";
+import { GetNonAssignedEmployeesAPI } from "../api/GET";
+import { CreateEmployeeTableRangeAPI } from "../api/POST";
+import { DeleteEmployeeTableAPI } from "../api/DELETE";
 import {
   Box,
   Typography,
@@ -32,6 +35,14 @@ import {
   DialogActions,
   Tooltip,
   AvatarGroup,
+  Select,
+  MenuItem,
+  Checkbox,
+  ListItemText,
+  InputLabel,
+  FormControl,
+  OutlinedInput,
+  Menu,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -58,6 +69,77 @@ const TableList = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentTable, setCurrentTable] = useState(null);
+
+  const [assignModalOpen, setAssignModalOpen] = useState(false);
+  const [selectedTableForAssign, setSelectedTableForAssign] = useState(null);
+  const [nonAssignedEmployees, setNonAssignedEmployees] = useState([]);
+  const [selectedEmployeeIds, setSelectedEmployeeIds] = useState([]);
+  const [assignLoading, setAssignLoading] = useState(false);
+
+  const [employeeMenuAnchorEl, setEmployeeMenuAnchorEl] = useState(null);
+  const [selectedEmployeeTableId, setSelectedEmployeeTableId] = useState(null);
+  const [removeEmployeeLoading, setRemoveEmployeeLoading] = useState(false);
+
+  const handleEmployeeAvatarClick = (event, empTableId) => {
+    setEmployeeMenuAnchorEl(event.currentTarget);
+    setSelectedEmployeeTableId(empTableId);
+  };
+
+  const handleEmployeeMenuClose = () => {
+    setEmployeeMenuAnchorEl(null);
+    setSelectedEmployeeTableId(null);
+  };
+
+  const handleRemoveEmployee = async () => {
+    if (!selectedEmployeeTableId) return;
+    try {
+      setRemoveEmployeeLoading(true);
+      await DeleteEmployeeTableAPI(selectedEmployeeTableId, token);
+      dispatch(fetchTables({ token, page, perPage, search }));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setRemoveEmployeeLoading(false);
+      handleEmployeeMenuClose();
+    }
+  };
+
+  const handleAddEmployeeClick = async (table) => {
+    setSelectedTableForAssign(table);
+    setAssignModalOpen(true);
+    setNonAssignedEmployees([]);
+    setSelectedEmployeeIds([]);
+    try {
+      setAssignLoading(true);
+      const res = await GetNonAssignedEmployeesAPI(token, table.id);
+      if (res.data) {
+        setNonAssignedEmployees(res.data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setAssignLoading(false);
+    }
+  };
+
+  const handleAssignSubmit = async () => {
+    if (selectedEmployeeIds.length === 0) return;
+    try {
+      setAssignLoading(true);
+      const payload = selectedEmployeeIds.map((empId) => ({
+        employeeId: empId,
+        tableId: selectedTableForAssign.id.toString(),
+      }));
+      await CreateEmployeeTableRangeAPI(payload, token);
+      dispatch(fetchTables({ token, page, perPage, search }));
+      setAssignModalOpen(false);
+      setSelectedEmployeeIds([]);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setAssignLoading(false);
+    }
+  };
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     tableNumber: "",
@@ -444,12 +526,22 @@ const TableList = () => {
                                         placement="top"
                                       >
                                         <Avatar
+                                          onClick={(e) =>
+                                            handleEmployeeAvatarClick(
+                                              e,
+                                              emp.employeeTableId,
+                                            )
+                                          }
                                           alt={emp.name}
                                           src={
                                             empImage
                                               ? `${BACKEND_API}/images/user/${empImage}`
                                               : ""
                                           }
+                                          sx={{
+                                            cursor: "pointer",
+                                            "&:hover": { opacity: 0.8 },
+                                          }}
                                         >
                                           {emp.name ? emp.name[0] : "S"}
                                         </Avatar>
@@ -459,6 +551,7 @@ const TableList = () => {
                               </AvatarGroup>
                               <IconButton
                                 size="small"
+                                onClick={() => handleAddEmployeeClick(table)}
                                 sx={{
                                   border: `1px dashed ${theme.palette.success.main}`,
                                   color: theme.palette.success.main,
@@ -587,6 +680,148 @@ const TableList = () => {
         backendError={backendError}
         isSubmitting={isSubmitting}
       />
+
+      {/* Assign Employees Dialog */}
+      <Dialog
+        open={assignModalOpen}
+        onClose={() => setAssignModalOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          Assign Employees to Table {selectedTableForAssign?.tableNumber}
+        </DialogTitle>
+        <DialogContent>
+          {assignLoading && nonAssignedEmployees.length === 0 ? (
+            <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <FormControl fullWidth sx={{ mt: 2 }}>
+              <InputLabel id="multiple-employee-label">
+                Select Employees
+              </InputLabel>
+              <Select
+                labelId="multiple-employee-label"
+                multiple
+                value={selectedEmployeeIds}
+                onChange={(e) => setSelectedEmployeeIds(e.target.value)}
+                input={<OutlinedInput label="Select Employees" />}
+                renderValue={(selected) =>
+                  nonAssignedEmployees
+                    .filter((emp) =>
+                      selected.includes(emp.id || emp.employeeId),
+                    )
+                    .map(
+                      (emp) =>
+                        emp.name ||
+                        emp.fullName ||
+                        (emp.user && emp.user.fullName) ||
+                        emp.id ||
+                        emp.employeeId,
+                    )
+                    .join(", ")
+                }
+              >
+                {nonAssignedEmployees.map((emp) => {
+                  const empIdentifier = emp.id || emp.employeeId;
+                  const empName =
+                    emp.name ||
+                    emp.fullName ||
+                    (emp.user && emp.user.fullName) ||
+                    empIdentifier;
+
+                  const storeEmployee = employees?.find(
+                    (e) => e.id === empIdentifier,
+                  );
+                  const empImage =
+                    storeEmployee?.image ||
+                    storeEmployee?.user?.image ||
+                    emp.image ||
+                    (emp.user && emp.user.image);
+
+                  let imageSrc = undefined;
+                  if (empImage) {
+                    if (
+                      empImage.startsWith("data:") ||
+                      empImage.startsWith("http")
+                    ) {
+                      imageSrc = empImage;
+                    } else if (
+                      empImage.length > 100 &&
+                      !empImage.includes(".")
+                    ) {
+                      // Base64 without data prefix
+                      imageSrc = `data:image/jpeg;base64,${empImage}`;
+                    } else {
+                      imageSrc = `${BACKEND_API}/images/user/${empImage}`;
+                    }
+                  }
+
+                  return (
+                    <MenuItem
+                      key={empIdentifier || Math.random()}
+                      value={empIdentifier}
+                    >
+                      <Checkbox
+                        checked={
+                          selectedEmployeeIds.indexOf(empIdentifier) > -1
+                        }
+                      />
+                      <Avatar
+                        src={imageSrc}
+                        sx={{ width: 32, height: 32, mr: 2, fontSize: "1rem" }}
+                      >
+                        {empName ? empName[0] : "E"}
+                      </Avatar>
+                      <ListItemText
+                        primary={empName}
+                        secondary={emp.designation || ""}
+                      />
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setAssignModalOpen(false)} color="inherit">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleAssignSubmit}
+            variant="contained"
+            disabled={selectedEmployeeIds.length === 0 || assignLoading}
+          >
+            {assignLoading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "Submit"
+            )}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Remove Employee Menu */}
+      <Menu
+        anchorEl={employeeMenuAnchorEl}
+        open={Boolean(employeeMenuAnchorEl)}
+        onClose={handleEmployeeMenuClose}
+      >
+        <MenuItem
+          onClick={handleRemoveEmployee}
+          disabled={removeEmployeeLoading}
+        >
+          {removeEmployeeLoading ? (
+            <CircularProgress size={20} sx={{ mr: 1, color: "error.main" }} />
+          ) : null}
+          <ListItemText
+            primary="Remove Employee"
+            sx={{ color: "error.main" }}
+          />
+        </MenuItem>
+      </Menu>
     </Box>
   );
 };
