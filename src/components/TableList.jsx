@@ -541,6 +541,8 @@ const TableList = () => {
                                           sx={{
                                             cursor: "pointer",
                                             "&:hover": { opacity: 0.8 },
+                                            backgroundColor:
+                                              theme.palette.primary.main,
                                           }}
                                         >
                                           {emp.name ? emp.name[0] : "S"}
