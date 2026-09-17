@@ -513,15 +513,15 @@ const TableList = () => {
                                 }}
                               >
                                 {table.employees &&
-                                  table.employees.map((emp) => {
+                                  table.employees.map((empl) => {
                                     const storeEmployee = employees?.find(
-                                      (e) => e.id === emp.employeeId,
+                                      (e) => e.id === empl.employeeId,
                                     );
                                     const empImage = storeEmployee?.user?.image;
                                     return (
                                       <Tooltip
-                                        key={emp.employeeTableId}
-                                        title={`${emp.name}${storeEmployee?.designation ? ` • ${storeEmployee.designation}` : ""}`}
+                                        key={empl.employeeTableId}
+                                        title={`${empl.name}${storeEmployee?.designation ? ` • ${storeEmployee.designation}` : ""}`}
                                         arrow
                                         placement="top"
                                       >
@@ -529,10 +529,10 @@ const TableList = () => {
                                           onClick={(e) =>
                                             handleEmployeeAvatarClick(
                                               e,
-                                              emp.employeeTableId,
+                                              empl.employeeTableId,
                                             )
                                           }
-                                          alt={emp.name}
+                                          alt={empl.name}
                                           src={
                                             empImage
                                               ? `${BACKEND_API}/images/user/${empImage}`
@@ -541,11 +541,10 @@ const TableList = () => {
                                           sx={{
                                             cursor: "pointer",
                                             "&:hover": { opacity: 0.8 },
-                                            backgroundColor:
-                                              theme.palette.primary.main,
+                                            bgcolor: theme.palette.primary.main,
                                           }}
                                         >
-                                          {emp.name ? emp.name[0] : "S"}
+                                          {empl.name ? empl.name[0] : "S"}
                                         </Avatar>
                                       </Tooltip>
                                     );
