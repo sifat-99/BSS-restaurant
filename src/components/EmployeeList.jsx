@@ -595,6 +595,18 @@ const EmployeeList = () => {
                 page={page - 1} // MUI pagination is 0-indexed
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
+                sx={{
+                  overflowX: "hidden",
+                  ".MuiTablePagination-toolbar": {
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                    minHeight: "auto",
+                    py: 1,
+                  },
+                  ".MuiTablePagination-selectLabel": { m: 0 },
+                  ".MuiTablePagination-displayedRows": { m: 0 },
+                  ".MuiTablePagination-actions": { ml: 0 },
+                }}
               />
             </Paper>
           )}

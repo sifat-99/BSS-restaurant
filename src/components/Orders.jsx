@@ -683,7 +683,16 @@ const Orders = () => {
             onRowsPerPageChange={handleChangeRowsPerPage}
             sx={{
               borderBottom: "none",
-              ".MuiTablePagination-toolbar": { minHeight: 48 },
+              overflowX: "hidden",
+              ".MuiTablePagination-toolbar": {
+                minHeight: 48,
+                flexWrap: "wrap",
+                justifyContent: "center",
+                py: 1,
+              },
+              ".MuiTablePagination-selectLabel": { m: 0 },
+              ".MuiTablePagination-displayedRows": { m: 0 },
+              ".MuiTablePagination-actions": { ml: 0 },
             }}
           />
         </Paper>

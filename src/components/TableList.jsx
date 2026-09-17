@@ -642,6 +642,18 @@ const TableList = () => {
                   page={page - 1}
                   onPageChange={handleChangePage}
                   onRowsPerPageChange={handleChangeRowsPerPage}
+                  sx={{
+                    overflowX: "hidden",
+                    ".MuiTablePagination-toolbar": {
+                      flexWrap: "wrap",
+                      justifyContent: "center",
+                      minHeight: "auto",
+                      py: 0,
+                    },
+                    ".MuiTablePagination-selectLabel": { m: 0 },
+                    ".MuiTablePagination-displayedRows": { m: 0 },
+                    ".MuiTablePagination-actions": { ml: 0 },
+                  }}
                 />
               </Box>
             </Paper>
