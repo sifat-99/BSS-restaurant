@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { GetAllOrdersDataTableApi } from "../api/GET";
-import { UpdateOrderStatusAPI } from "../api/PUT";
+import { UpdateOrdersByIdAPI, UpdateOrderStatusAPI } from "../api/PUT";
+import { DeleteOrdersByIdAPI } from "../api/DELETE";
 
 export const fetchOrders = createAsyncThunk(
   "order/fetchOrders",
@@ -44,6 +45,38 @@ export const updateOrderStatus = createAsyncThunk(
   }
 );
 
+export const deleteOrder = createAsyncThunk(
+  "order/deleteOrder",
+  async ({ id, token }, { dispatch, getState, rejectWithValue }) => {
+    try {
+      await DeleteOrdersByIdAPI(id, token);
+
+      const { page, perPage, search, sort, status } = getState().order;
+      dispatch(fetchOrders({ token, page, perPage, search, sort, status }));
+
+      return { id };
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to delete order.");
+    }
+  }
+);
+
+export const updateOrder = createAsyncThunk(
+  "order/updateOrder",
+  async ({ id, data, token }, { dispatch, getState, rejectWithValue }) => {
+    try {
+      await UpdateOrdersByIdAPI(id, data, token);
+
+      const { page, perPage, search, sort, status: filterStatus } = getState().order;
+      dispatch(fetchOrders({ token, page, perPage, search, sort, status: filterStatus }));
+
+      return { id, status };
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to update order status.");
+    }
+  }
+);
+
 const orderSlice = createSlice({
   name: "order",
   initialState: {
@@ -64,7 +97,7 @@ const orderSlice = createSlice({
       if (action.payload.search !== undefined) state.search = action.payload.search;
       if (action.payload.sort !== undefined) state.sort = action.payload.sort;
       if (action.payload.status !== undefined) state.status = action.payload.status;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -85,6 +118,25 @@ const orderSlice = createSlice({
       .addCase(fetchOrders.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to fetch orders";
+      })
+      .addCase(deleteOrder.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orders = state.orders.filter((order) => order.id !== action.payload.id);
+        state.totalPages = Math.max(1, Math.ceil((state.orders.length || 0) / state.perPage));
+      })
+      .addCase(deleteOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to delete order.";
+      })
+      .addCase(updateOrder.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orders = state.orders.map((order) =>
+          order.id === action.payload.id ? { ...order, ...action.payload } : order
+        );
+      })
+      .addCase(updateOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to update order.";
       });
   },
 });

@@ -41,6 +41,7 @@ const FloatingCart = () => {
   const { cartItems, isCartOpen, selectedTable, customerPhone } = useSelector(
     (state) => state.cart,
   );
+  const token = useSelector((state) => state.auth.token);
 
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cartItems.reduce((sum, item) => sum + item.totalPrice, 0);
@@ -62,21 +63,23 @@ const FloatingCart = () => {
   const handleSubmitOrder = () => {
     if (!/^\+?[0-9]{11}$/.test(customerPhone)) {
       setPhoneError("Please enter a valid 11-digit phone number");
-      return;
     }
 
     const orderObject = {
-      tableId: selectedTable?.id,
+      tableId: selectedTable?.id || 0,
       orderNumber: "ORD-" + Math.floor(1000 + Math.random() * 9000),
       amount: totalPrice,
       phoneNumber: customerPhone,
       items: cartItems.map((item) => ({
         foodId: item.id,
+        foodPackageId: 0,
         quantity: item.quantity,
+        unitPrice: item.discountPrice || item.price,
+        totalPrice: item.totalPrice,
       })),
     };
 
-    dispatch(placeOrder(orderObject));
+    dispatch(placeOrder({ orderData: orderObject, token }));
   };
 
   return (
@@ -128,6 +131,7 @@ const FloatingCart = () => {
           paper: {
             sx: {
               width: { xs: "100%", sm: 400 },
+              height: "96vh",
               bgcolor: "background.default",
               display: "flex",
               flexDirection: "column",
@@ -258,7 +262,7 @@ const FloatingCart = () => {
                     sx={{
                       display: "flex",
                       alignItems: "center",
-                      bgcolor: alpha(theme.palette.divider, 0.5),
+                      bgcolor: alpha(theme.palette.divider, 0.1),
                       borderRadius: 8,
                     }}
                   >
@@ -317,7 +321,7 @@ const FloatingCart = () => {
             placeholder={
               selectedTable?.phoneNumber ||
               selectedTable?.booking?.phoneNumber ||
-              "Enter phone number"
+              "Enter phone number (Optional)"
             }
             onChange={(e) => {
               dispatch(setCustomerPhone(e.target.value));

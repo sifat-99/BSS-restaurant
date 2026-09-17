@@ -372,7 +372,7 @@ const OrderPage = () => {
                           right: 0,
                           bottom: 0,
                           borderRadius: "50%",
-                          bgcolor: alpha(theme.palette.common.black, 0.4),
+                          bgcolor: "transparent",
                           zIndex: 0,
                         }}
                       />
@@ -381,15 +381,10 @@ const OrderPage = () => {
                     <Typography
                       variant="h5"
                       fontWeight="bold"
-                      color={
-                        selectedTable.image ? "common.white" : "primary.main"
-                      }
+                      color="primary.main"
                       sx={{
                         animation: "slowSpin 20s linear infinite reverse",
                         zIndex: 1,
-                        textShadow: selectedTable.image
-                          ? "0 2px 8px rgba(0,0,0,0.8)"
-                          : "none",
                       }}
                     >
                       Table {selectedTable.tableNumber || selectedTable.id}

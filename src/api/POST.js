@@ -62,3 +62,14 @@ export const CreateEmployeeTableRangeAPI = async (data, token) => {
         throw error;
     }
 };
+
+export const CreateOrderAPI = async (data, token) => {
+    try {
+        const response = await api.post(`/api/Order/create`, data, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};

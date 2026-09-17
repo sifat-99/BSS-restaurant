@@ -1,4 +1,19 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { CreateOrderAPI } from "../api/POST";
+import { fetchOrders } from "./orderSlice";
+
+export const placeOrder = createAsyncThunk(
+  "cart/placeOrder",
+  async ({ orderData, token }, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await CreateOrderAPI(orderData, token);
+      dispatch(fetchOrders({ token })); // Refresh orders list
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to place order");
+    }
+  }
+);
 
 const initialState = {
   selectedTable: null,
@@ -58,13 +73,14 @@ const cartSlice = createSlice({
     setCustomerPhone: (state, action) => {
       state.customerPhone = action.payload;
     },
-    placeOrder: (state, action) => {
-      console.log("Submitting Order via Redux:", action.payload);
-      // Clear the cart after placing the order
+  },
+  extraReducers: (builder) => {
+    builder.addCase(placeOrder.fulfilled, (state, action) => {
+      console.log("Order submitted successfully:", action.payload);
       state.cartItems = [];
       state.customerPhone = "";
       state.isCartOpen = false;
-    },
+    });
   },
 });
 
@@ -76,7 +92,6 @@ export const {
   toggleCart,
   setCartOpen,
   setCustomerPhone,
-  placeOrder,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

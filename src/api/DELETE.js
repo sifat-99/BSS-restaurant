@@ -49,3 +49,17 @@ export const DeleteEmployeeTableAPI = async (id, token) => {
         throw error;
     }
 };
+
+export const DeleteOrdersByIdAPI = async (id, token) => {
+    console.log(id);
+    try {
+        const response = await api.delete(`/api/Order/delete/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};

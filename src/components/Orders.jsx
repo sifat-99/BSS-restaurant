@@ -20,6 +20,12 @@ import {
   IconButton,
   Avatar,
   Menu,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
 } from "@mui/material";
 import {
   Search,
@@ -33,11 +39,13 @@ import {
 } from "@mui/icons-material";
 import { useTheme, alpha } from "@mui/material/styles";
 import {
+  deleteOrder,
   fetchOrders,
   setOrderFilters,
   updateOrderStatus,
 } from "../store/orderSlice";
 import { BACKEND_API } from "../api/API";
+import OrderUpdateModal from "./OrderUpdateModal";
 
 const STATUS_OPTIONS = [
   { value: 0, label: "Pending", color: "warning", acronym: "Pending" },
@@ -82,6 +90,13 @@ const Orders = () => {
   const [localSearch, setLocalSearch] = useState(search);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [orderToEdit, setOrderToEdit] = useState(null);
+
+  const handleEditClick = (order) => {
+    setOrderToEdit(order);
+    setEditModalOpen(true);
+  };
 
   const handleStatusClick = (event, orderId) => {
     setAnchorEl(event.currentTarget);
@@ -154,7 +169,26 @@ const Orders = () => {
     );
   };
 
-  console.log(orders);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [orderToDelete, setOrderToDelete] = useState(null);
+
+  const handleOrderDelete = (orderId) => {
+    setOrderToDelete(orderId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (orderToDelete) {
+      dispatch(deleteOrder({ id: orderToDelete, token }));
+      setDeleteDialogOpen(false);
+      setOrderToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setOrderToDelete(null);
+  };
 
   return (
     <Box
@@ -301,8 +335,7 @@ const Orders = () => {
                       borderRadius: 3,
                       border: `1px solid ${alpha(theme.palette.divider, 0.5)}`,
                       height: "400px",
-                      minWidth: "400px",
-                      width: "100%",
+                      width: "400px",
                       display: "flex",
                       flexDirection: "column",
                       bgcolor: "background.paper",
@@ -373,6 +406,8 @@ const Orders = () => {
                         </IconButton>
                         <IconButton
                           size="small"
+                          onClick={() => handleEditClick(order)}
+                          disabled={order.orderStatus === "Paid"}
                           sx={{
                             border: `1px solid ${theme.palette.divider}`,
                             borderRadius: 2,
@@ -388,6 +423,7 @@ const Orders = () => {
                         </IconButton>
                         <IconButton
                           size="small"
+                          onClick={() => handleOrderDelete(order.id)}
                           sx={{
                             border: `1px solid ${theme.palette.divider}`,
                             borderRadius: 2,
@@ -633,6 +669,57 @@ const Orders = () => {
           </MenuItem>
         ))}
       </Menu>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleCancelDelete}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            p: 1,
+          },
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: "bold", color: "error.main" }}>
+          Delete Order
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you absolutely sure you want to delete this order? This action
+            cannot be undone and will permanently remove the order from the
+            system.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button
+            onClick={handleCancelDelete}
+            color="inherit"
+            sx={{ borderRadius: 2, px: 3 }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            variant="contained"
+            color="error"
+            sx={{ borderRadius: 2, px: 3 }}
+            disableElevation
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Update Order Modal */}
+      <OrderUpdateModal
+        open={editModalOpen}
+        onClose={() => {
+          setEditModalOpen(false);
+          setOrderToEdit(null);
+        }}
+        order={orderToEdit}
+      />
     </Box>
   );
 };
